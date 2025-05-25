@@ -1,0 +1,59 @@
+:root{
+    --color-white: #fff;
+    --color-grey: #323232;
+    --color-black: #000;
+
+    --color-green: #398714;
+    --color-orange: #EC9532;
+    --color-red: #B81F1F;
+
+    --color-primary: #7830ca;
+    --color-secondary: #c9983f;
+
+    --color-primary-100: color-mix(in srgb, var(--color-primary) 80%, black);
+    --color-primary-200: color-mix(in srgb, var(--color-primary) 60%, black);
+    --color-primary-300: color-mix(in srgb, var(--color-primary) 40%, black);
+    --color-primary-400: color-mix(in srgb, var(--color-primary) 20%, black);
+    --color-primary-500: var(--color-primary);
+    --color-primary-600: color-mix(in srgb, var(--color-primary) 20%, white);
+    --color-primary-700: color-mix(in srgb, var(--color-primary) 40%, white);
+    --color-primary-800: color-mix(in srgb, var(--color-primary) 60%, white);
+    --color-primary-900: color-mix(in srgb, var(--color-primary) 80%, white);
+
+    --color-secondary-100: color-mix(in srgb, var(--color-secondary) 80%, black);
+    --color-secondary-200: color-mix(in srgb, var(--color-secondary) 60%, black);
+    --color-secondary-300: color-mix(in srgb, var(--color-secondary) 40%, black);
+    --color-secondary-400: color-mix(in srgb, var(--color-secondary) 20%, black);
+    --color-secondary-500: var(--color-secondary);
+    --color-secondary-600: color-mix(in srgb, var(--color-secondary) 20%, white);
+    --color-secondary-700: color-mix(in srgb, var(--color-secondary) 40%, white);
+    --color-secondary-800: color-mix(in srgb, var(--color-secondary) 60%, white);
+    --color-secondary-900: color-mix(in srgb, var(--color-secondary) 80%, white);
+    
+    --color-grey-100: color-mix(in srgb, var(--color-grey) 80%, black);
+    --color-grey-200: color-mix(in srgb, var(--color-grey) 60%, black);
+    --color-grey-300: color-mix(in srgb, var(--color-grey) 40%, black);
+    --color-grey-400: color-mix(in srgb, var(--color-grey) 20%, black);
+    --color-grey-500: var(--color-grey);
+    --color-grey-600: color-mix(in srgb, var(--color-grey) 20%, white);
+    --color-grey-700: color-mix(in srgb, var(--color-grey) 40%, white);
+    --color-grey-800: color-mix(in srgb, var(--color-grey) 60%, white);
+    --color-grey-900: color-mix(in srgb, var(--color-grey) 80%, white);
+
+
+    /* General Colors */
+    --color-bg: var(--color-black);
+    --color-txt: var(--color-white);
+    --color-nav: #32323240;
+    --color-bg-login: linear-gradient(var(--color-primary-400), var(--color-black) 75%);
+    
+    /* Notification Colors */
+    --color-general: var(--color-white);
+    --color-general-text: var(--color-grey-200);
+    --color-success: var(--color-green);
+    --color-success-text: #2c6a10;
+    --color-warning: var(--color-orange);
+    --color-warning-text: #7e5200;
+    --color-error: var(--color-red);
+    --color-error-text: #7e0000;
+}
