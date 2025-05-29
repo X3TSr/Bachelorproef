@@ -1,5 +1,6 @@
 import React from 'react'
 import style from './Dashboard.module.css'
+
 import useFetchUser from '../../hooks/useFetchUser';
 
 import Button from '../../Components/Button/Button';
@@ -13,6 +14,7 @@ const Dashboard = () => {
     if (error) return <p>{error}</p>
     if (!user) return <p>Nothing to show</p>
 
+
     return (
         <>
             <section className={`${style.sectionDashboard}`}>
@@ -24,8 +26,8 @@ const Dashboard = () => {
                     <div className={`${style.cardContainer}`}>
                         <div className={`${style.top}`}>
                             <Card type='budgetText' content='Total' />
-                            <Card type='budgetText' content='Income' />
-                            <Card type='budgetText' content='Expenses' />
+                            <Card type='budgetTextG' content='Income' />
+                            <Card type='budgetTextR' content='Expenses' />
                         </div>
                         <div className={`${style.bottom}`}>
 

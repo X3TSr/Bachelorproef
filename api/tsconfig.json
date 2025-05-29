@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "esModuleInterop": true,
+        "outDir": "./dist",
+        "target": "ES2024",
+        "module": "NodeNext",
+        "moduleResolution": "nodenext",
+        "strict": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+      },
+      "typeRoots": ["./node_modules/@types", "./types"],
+        "include": ["src"],
+}
