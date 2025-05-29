@@ -35,7 +35,7 @@ const Signup = () => {
 
     const checkEnter = (e) => {
         if (e.key === 'Enter') {
-            loginBtn.current?.click();
+            signinBtn.current?.click();
         }
     }
 
