@@ -1,0 +1,92 @@
+header{
+    --header-width: 6vw;
+    --logo-size: clamp(4rem, 4vw, 6rem);
+    --items-gap: 3.2rem;
+    --magic-center-clamp: clamp(16%, calc(3vw - calc(var(--logo-size) / 2)), 3vw);
+
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+
+    background-color: transparent;
+    border-right: 1px solid var(--color-white);
+
+    height: 100vh;
+    width: var(--header-width);
+    min-width: 6rem;
+    padding: 2rem 0;
+
+    transition: all .5s ease-in-out, width .5s cubic-bezier(0.075, 0.82, 0.165, 1);
+
+    backdrop-filter: blur(.1rem);
+}
+header nav,
+header .subnav{
+    display: flex;
+    flex-direction: column;
+    gap: var(--items-gap);
+
+    width: 100%;
+}
+header .subnav{
+    top: unset;
+    bottom: 0;
+}
+header nav img{
+    width: var(--logo-size);
+    min-width: 4rem;
+    margin-left: var(--magic-center-clamp);
+    margin-right: auto;
+}
+header .subnav{
+    gap: calc(var(--items-gap) / 2);
+}
+header a{
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    color: var(--color-white);
+
+    font-size: clamp(3.2rem, 3.2vw, 4rem);
+    text-decoration: none;
+
+    width: 100%;
+    margin-left: var(--magic-center-clamp);
+    margin-right: auto;
+
+    transition: all .5s ease-in-out;
+}
+header a::after{
+    content: attr(data-alt);
+
+    opacity: 0;
+
+    z-index: -1;
+    
+    font: var(--font-paragraph);
+    font-size: clamp(.8rem, 3.2vw, 2rem);
+    
+    width: 0%;
+
+    transition: all .5s ease-out, opacity .1s ease;
+}
+
+
+.expanded{
+    --header-width: 16vw;
+}
+.expanded a{
+    padding-right: 5rem;
+}
+.expanded a::after{
+    opacity: 1;
+
+    padding-left: 1vw;
+    
+    transition: all .25s ease, opacity .5s ease;
+}

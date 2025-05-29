@@ -1,0 +1,27 @@
+.sectionDashboard{
+    display: flex;
+    flex-direction: column;
+    gap: 6rem;
+
+    padding: 2rem 24rem;
+}
+
+.title{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.cardContainer{
+    display: flex;
+    flex-direction: column;
+
+    padding-bottom: 3rem;
+}
+
+.top{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3rem;
+}

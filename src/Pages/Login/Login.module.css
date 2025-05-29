@@ -1,0 +1,80 @@
+.sectionLogin{
+    display: flex;
+    gap: 2.4rem;
+
+    height: 100vh;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+}
+
+
+.containerImage{
+    position: relative;
+
+    mask-image: url('/images/login-vector-full.svg');
+    mask-position: center;
+    mask-size: 130%;
+    mask-repeat: no-repeat;
+    border-radius: var(--general-border-radius);
+    
+    width: 50vw;
+    height: 100%;
+}
+.containerImage::before{
+    content: '';
+
+    z-index: -1;
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    
+    background-image: url('/images/pattern.svg');
+    background-size: 5%;
+
+    width: 200%;
+    height: 200%;
+
+    transform: rotate(60deg);
+
+    animation: animatedBackground 30s linear infinite;
+}
+.loginVector{
+    background-color: var(--color-black);
+    mask-image: url('/images/login-vector-parts.svg');
+    mask-position: center;
+    mask-size: 130%;
+    mask-repeat: no-repeat;
+    
+    width: 100%;
+    height: 100%;
+}
+
+
+.containerLogin{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2.4rem;
+
+    width: 40vw;
+    padding: var(--general-padding-site);
+}
+.containerLogin img{
+    width: 100%;
+}
+.containerLogin > div{
+    width: 100%;
+}
+
+
+.switch_link{
+    color: var(--color-primary);
+    filter: hue-rotate(260deg);
+}
+
+
+@keyframes animatedBackground {
+  from { background-position: 0 0; }
+  to { background-position: 100% 0; }
+}

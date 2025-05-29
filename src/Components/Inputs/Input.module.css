@@ -1,0 +1,53 @@
+.parent{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+
+    font-size: 2.4rem;
+}
+.parent > :first-child{
+    width: 100%;
+}
+
+.container{
+    position: relative;
+}
+
+.input{
+    background-color: transparent;
+    color: var(--color-white);
+
+    border: 1px solid var(--color-white);
+    border-radius: var(--general-border-radius);
+
+    height: 3rem;
+    width: 100%;
+    padding: 2rem;
+    margin: 1rem 0;
+
+    transition: all .25s;
+}
+.input:focus{
+    box-shadow: 0rem 0rem 1rem white;
+}
+.label{
+    position: absolute;
+    top: 0;
+    left: 2rem;
+
+    background-color: var(--color-black);
+    font: var(--font-paragraph);
+    border-radius: var(--general-border-radius);
+
+    padding: 0 1rem;
+}
+
+.edit{
+    user-select: none; 
+    cursor: pointer;
+}
+
+.hidden{
+    display: none;
+}

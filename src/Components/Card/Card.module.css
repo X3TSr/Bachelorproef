@@ -1,0 +1,36 @@
+.card{
+    overflow: hidden;
+
+    border-radius: var(--general-border-radius);
+
+    width: 100%;
+    height: 100%;
+    padding: 1rem;
+
+    backdrop-filter: blur(.25rem);
+}
+
+.background{
+    opacity: .4;
+
+    z-index: -1;
+    position: absolute;
+    inset: 0;
+    
+    width: 100%;
+    height: 100%;
+}
+.dark{
+    background-color: var(--color-black);
+}
+.light{
+    background-color: var(--color-white);
+}
+
+
+
+.alignLeft{
+    display: flex;
+    flex-direction: column;
+    align-items: end;
+}

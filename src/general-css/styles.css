@@ -5,11 +5,23 @@
 @import 'notifications.css';
 @import 'buttonsAndLinks.css';
 
+:root{
+    --general-border-radius: 0.8rem;
+    --general-padding-site: 6rem;
+}
 
-body:has(form){
+body{
+    overflow: hidden;
     min-height: 100vh;
 }
 
+section{
+    position: relative;
+    
+    width: 100%;
+    min-height: 100vh;
+    padding: var(--general-padding-site);
+}
 
 .container{
     width: 100vw;
