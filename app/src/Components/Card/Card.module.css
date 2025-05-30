@@ -28,9 +28,17 @@
 }
 
 
+.cardTitle{
+    opacity: .6;
+}
 
 .alignLeft{
     display: flex;
     flex-direction: column;
     align-items: end;
+}
+.alignCenter{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
