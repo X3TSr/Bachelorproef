@@ -22,7 +22,7 @@ export default function useFetchUser(uidParam) {
                 const data = await getUser(uid)
                 setUser({ ...data, email });
             } catch (error) {
-                setError(error)
+                setError(error.message)
             } finally {
                 setLoading(false)
             }
