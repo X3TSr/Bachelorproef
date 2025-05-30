@@ -1,5 +1,6 @@
 .button{
     background-color: var(--color-primary);
+    color: var(--color-white);
     border: none;
     border-radius: var(--general-border-radius);
 
