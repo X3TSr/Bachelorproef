@@ -40,3 +40,7 @@ section{
 .colorSecondary{
     color: var(--color-secondary);
 }
+
+.span2{
+    grid-column: span 2;
+}
