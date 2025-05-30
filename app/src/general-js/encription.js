@@ -36,3 +36,10 @@ export function jsonToString(json) {
 export function stringToJSON(str) {
     return JSON.parse(str);
 }
+
+
+export function getTestDataCrypt(testData) {
+    const a = modules.encriptionModule.jsonToString(testData);
+    const b = modules.encriptionModule.compressToBase64(a);
+    console.log(b);
+}
