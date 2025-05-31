@@ -41,6 +41,42 @@ section{
     color: var(--color-secondary);
 }
 
+
+
+.flex{
+    display: flex;
+}
+.fdc{
+    flex-direction: column;
+}
+.alignLeft{
+    align-items: start;
+}
+.alignCenter{
+    align-items: center;
+}
+.alignRight{
+    align-items: end;
+}
+.justifyTop{
+    justify-content: start;
+}
+.justifyMiddle{
+    justify-content: center;
+}
+.justifyBottom{
+    justify-content: end;
+}
+.justifySpaceBetween{
+    justify-content: space-between;
+}
+
 .span2{
     grid-column: span 2;
+}
+.w100{
+    width: 100%;
+}
+.h100{
+    height: 100%;
 }

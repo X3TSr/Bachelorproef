@@ -6,9 +6,9 @@
     --font-heading-2: 900 4.0rem 'Noto Sans', sans-serif;
     --font-heading-3: 900 3.6rem 'Noto Sans', sans-serif;
     --font-heading-4: 900 3rem 'Noto Sans', sans-serif;
-    --font-subheading: 2.0rem 'Inter', sans-serif;
-    --font-paragraph: 1.4rem 'Inter', sans-serif;
-    --font-small-text: 1.0rem 'Inter', sans-serif;
+    --font-subheading: 400 2.0rem 'Inter', sans-serif;
+    --font-paragraph: 400 1.4rem 'Inter', sans-serif;
+    --font-small-text: 400 1.0rem 'Inter', sans-serif;
 }
 
 @media (max-width: 600px) {
@@ -17,8 +17,8 @@
         --font-heading-2: 900 2.4rem 'Noto Sans', sans-serif;
         --font-heading-3: 900 2.0rem 'Noto Sans', sans-serif;
         --font-heading-4: 900 1.4rem 'Noto Sans', sans-serif;
-        --font-subheading: 1.2rem 'Inter', sans-serif;
-        --font-paragraph: 1.0rem 'Inter', sans-serif;
-        --font-small-text: 0.8rem 'Inter', sans-serif;
+        --font-subheading: 400 1.2rem 'Inter', sans-serif;
+        --font-paragraph: 400 1.0rem 'Inter', sans-serif;
+        --font-small-text: 400 0.8rem 'Inter', sans-serif;
     }
 }
