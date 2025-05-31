@@ -39,7 +39,7 @@ export function stringToJSON(str) {
 
 
 export function getTestDataCrypt(testData) {
-    const a = modules.encriptionModule.jsonToString(testData);
-    const b = modules.encriptionModule.compressToBase64(a);
+    const a = jsonToString(testData);
+    const b = compressToBase64(a);
     console.log(b);
 }
