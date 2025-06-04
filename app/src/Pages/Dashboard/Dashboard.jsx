@@ -34,8 +34,6 @@ const Dashboard = () => {
 
     if (user.firstSignin) return <Intro />
 
-    // console.log(data);
-
     if (data) return (
         <>
             <section className={`${style.sectionDashboard}`}>
@@ -49,7 +47,13 @@ const Dashboard = () => {
                         <Card type='budgetTextG' content='Income' number={getAllTimeTotalIncome()} />
                         <Card type='budgetTextR' content='Expenses' number={getAllTimeTotalExpenses()} />
                         <Card type='graph' classN='span2' content='This Year Net' number={getYearNet()} />
-                        <Card type='percent' content='Year High Income' number={(getAllTimeHighestIncome().value / getAllTimeTotalIncome() * 100).toFixed(2)} subDescription={getAllTimeHighestIncome().label} subNumber={getAllTimeHighestIncome().value} />
+                        <Card
+                            type='percent'
+                            content='Year High Income'
+                            number={(getAllTimeHighestIncome()?.value ?? 1 / getAllTimeTotalIncome() == 0 ? 1 : getAllTimeTotalIncome() * 100).toFixed(2)}
+                            subDescription={getAllTimeHighestIncome()?.label}
+                            subNumber={getAllTimeHighestIncome()?.value}
+                        />
                     </div>
                     <Link to={ROUTES.cashflow}>
                         <Button height='auto' type='primary' fontSize='h4' text='Add Cashflow' />
