@@ -14,14 +14,11 @@
 }
 
 .cardContainer{
-    display: flex;
-    flex-direction: column;
+    --grid-gap: 3rem;
 
-    padding-bottom: 3rem;
-}
-
-.top{
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 3rem;
+    gap: var(--grid-gap);
+    
+    padding-bottom: 3rem;
 }
