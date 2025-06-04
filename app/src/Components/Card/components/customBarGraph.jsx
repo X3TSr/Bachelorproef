@@ -1,4 +1,7 @@
 import { ResponsiveBar } from '@nivo/bar'
+import { useTooltip } from '@nivo/tooltip'
+
+import * as modules from '../../../general-js/scripts';
 
 
 const getColor = (bar) => {
@@ -62,6 +65,9 @@ const CustomZeroLabels = ({ bars }) => {
 };
 
 const CustomRoundedBars = ({ bars }) => {
+
+    const { showTooltipFromEvent, hideTooltip } = useTooltip();
+
     // Utility to create an SVG path with different border radius for each corner
     const getRoundedPath = (x, y, width, height, radii) => {
         const { tl, tr, br, bl } = radii;
@@ -109,6 +115,27 @@ const CustomRoundedBars = ({ bars }) => {
                         key={bar.key}
                         d={getRoundedPath(bar.x, bar.y, bar.width, bar.height, radii)} // Generate the path
                         fill={bar.color} // Use Nivo's assigned color
+                        onMouseEnter={(event) =>
+                            showTooltipFromEvent(
+                                <div
+                                    style={{
+                                        padding: '6px 12px',
+                                        background: '#222',
+                                        color: '#fff',
+                                        border: `1px solid ${bar.color}`,
+                                        borderRadius: '4px',
+                                        fontSize: 12,
+                                        fontFamily: 'sans-serif',
+                                    }}
+                                >
+                                    <strong>{bar.id}</strong><br />
+                                    {bar.indexValue}: <strong>€{bar.data.value}</strong>
+                                </div>,
+                                event
+                            )
+                        }
+                        onMouseLeave={hideTooltip}
+                        style={{ cursor: 'pointer' }}
                     />
                 );
             })}
@@ -122,20 +149,65 @@ const CustomBarGraph = ({ inputData, inputKeys, numberOfYears = 0 }) => {
             data={inputData.slice((numberOfYears * -1), -1)}
             keys={inputKeys}
             indexBy="year"
-            margin={{ top: 30, right: 60, bottom: 30, left: 60 }}
-            padding={.3}
+
             valueScale={{ type: 'linear', nice: true, min: 'auto', max: 'auto' }}
-            valueFormat={value => `€${value}`}
+            valueFormat={value => `€ ${value.toFixed(2)}`}
+
+            enableTotals={true}
+            enableLabel={true}
+            labelSkipHeight={16}
+
+            tooltip={({ id, value, color, indexValue }) => (
+                <div
+                    style={{
+                        padding: '6px 12px',
+                        background: '#222',
+                        color: '#fff',
+                        border: `1px solid ${color}`,
+                        borderRadius: '4px',
+                        fontSize: 12,
+                        fontFamily: 'sans-serif',
+                    }}
+                >
+                    <strong style={{ color }}>{modules.textCasingModule.toSentenceCase(id)}</strong><br />
+                    <strong>€{value}</strong>
+                </div>
+            )}
+
             colors={getColor}
             motionConfig="wobbly"
+            margin={{ top: 30, right: 60, bottom: 30, left: 60 }}
+            padding={.3}
+
             gridYValues={[0]}
             axisTop={null}
             axisRight={null}
-            axisBottom={null}
+            axisBottom={{ tickSize: 0 }}
             axisLeft={null}
-            labelSkipWidth={999}
-            labelSkipHeight={999}
-            layers={['grid', 'axes', CustomRoundedBars, CustomZeroLabels, 'markers', 'legends']}
+
+            theme={{
+                axis: {
+                    ticks: {
+                        line: { stroke: "#888" },
+                        text: { fill: "#fff" }
+                    }
+                },
+                text: {
+                    fontSize: 16
+                }
+            }}
+
+            layers={[
+                'grid',
+                'axes',
+                'bars',
+                'totals',
+                // CustomRoundedBars,
+                // CustomZeroLabels,
+                'markers',
+                'legends',
+                'annotations'
+            ]}
         />
     );
 };
