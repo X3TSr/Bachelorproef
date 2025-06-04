@@ -1,7 +1,9 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, getFirestore, setDoc } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
 import { browserLocalPersistence, getAuth, setPersistence } from "firebase/auth";
+
+import * as modules from '../general-js/scripts';
 
 const firebaseConfig = {
   apiKey: "AIzaSyDy-wU0BjvyQ1rkiOi8e52-qKZd9h7sMJo",
@@ -12,11 +14,141 @@ const firebaseConfig = {
   appId: "1:158907696524:web:e5a55d4cb196739d4342a9",
   measurementId: "G-6VWVXYMM76"
 };
-
 const app = initializeApp(firebaseConfig);
+
+
+// ==========================
+//         DATABASE
+// ==========================
 export const db = getFirestore(app);
 
+
+
+// ==========================
+//      ADDING DOCUMENTS
+// ==========================
+
+export const dbAddDoc = async (crypt='') => {
+  try {
+    const docRef = await setDoc(doc(db, "data", auth.currentUser.uid), {
+      data: crypt,
+      owner: auth.currentUser.uid
+    });
+  } catch (e) {
+    console.error("Error adding document: ", e);
+  }
+}
+export const dbFillNewData = (transactions) => {
+  const json = {
+    "total": "0",
+    "totalIncome": "0",
+    "totalExpenses": "0",
+    "transactions": [],
+    "history": []
+  }
+  
+  // Add all transactions
+  transactions.map(transaction => {
+    json.transactions.push({
+      "label": `${transaction['Free-format reference']}`,
+      "type": `${parseFloat(transaction['Amount']) > 0 ? 'income' : 'expense'}`,
+      "value": `${transaction['Amount'].replace('-', '').replace(',', '.')}`,
+      "date": `${transaction['Date'].replaceAll('/', '')}`
+    })
+  })
+  
+  // Sort the transactions by date
+  json.transactions.sort((a, b) => {
+    const [dayA, monthA, yearA] = [
+      parseInt(a.date.slice(0, 2), 10),
+      parseInt(a.date.slice(2, 4), 10) - 1,
+      parseInt(a.date.slice(4), 10),
+    ];
+    const [dayB, monthB, yearB] = [
+      parseInt(b.date.slice(0, 2), 10),
+      parseInt(b.date.slice(2, 4), 10) - 1,
+      parseInt(b.date.slice(4), 10),
+    ];
+    
+    const dateA = new Date(yearA, monthA, dayA);
+    const dateB = new Date(yearB, monthB, dayB);
+    
+    return dateA - dateB;
+  })
+  
+  // Calculate total income & expenses
+  json.transactions.map(transaction => {
+    if (transaction.type == 'income') json.totalIncome = (parseFloat(json.totalIncome) + parseFloat(transaction.value)).toFixed(2);
+    if (transaction.type == 'expense') json.totalExpenses = (parseFloat(json.totalExpenses) + parseFloat(transaction.value)).toFixed(2);
+  })
+  
+  // Create each year obj in history
+  let prevYear = json.transactions[0].date.slice(-4);
+  let gain = 0;
+  let loss = 0;
+  json.transactions.map(transaction => {
+    if (transaction.date.slice(-4) > prevYear) {
+      json.history.push({ 'year': prevYear, 'gain': gain.toFixed(2), 'loss': loss.toFixed(2) })
+      gain = 0;
+      loss = 0;
+      prevYear = transaction.date.slice(-4);
+    } else {
+      if (transaction.type == 'income') gain += parseFloat(transaction.value);
+      if (transaction.type == 'expense') loss -= parseFloat(transaction.value);
+    }
+  });
+  json.history.push({ 'year': prevYear, 'gain': gain, 'loss': loss })
+  
+  // Calculate total net
+  json.total = parseFloat((json.totalIncome) - (json.totalExpenses)).toFixed(2);
+  
+  // Base64 & upload to firestore
+  const str = modules.encriptionModule.jsonToString(json);
+  const crypt = modules.encriptionModule.compressToBase64(str);
+  dbAddDoc(crypt);
+}
+
+
+
+// ==========================
+//     READING DOCUMENTS
+// ==========================
+
+// Get all docs
+export const dbReadDocs = async (collectionToLookFor) => {
+  const querySnapshot = await getDocs(collection(db, collectionToLookFor));
+  let output = {};
+  querySnapshot.forEach((doc) => {
+    const id = doc.id;
+    const data = doc.data();
+    output[id] = data;
+  });
+  return output;
+}
+// Get specific doc
+export const dbReadDoc = async (collection, document) => {
+  const docRef = doc(db, collection, document)
+  const docSnap = getDoc(docRef);
+  
+  if ((await docSnap).exists()) {
+    return (await docSnap).data();
+  }
+  else {
+    return null;
+  }
+}
+
+
+
+// ==========================
+//         ANALYTICS
+// ==========================
 export const analytics = getAnalytics(app);
 
+
+
+// ==========================
+//       AUTHENTICATION
+// ==========================
 export const auth = getAuth(app)
 setPersistence(auth, browserLocalPersistence)
