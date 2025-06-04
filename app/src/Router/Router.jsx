@@ -6,6 +6,7 @@ import Login from '../Pages/Login/Login';
 import Signup from '../Pages/Signup/Signup';
 import Profile from '../Pages/Profile/Profile';
 import Dashboard from '../Pages/Dashboard/Dashboard';
+import Taxes from '../Pages/Taxes/Taxes';
 import NotFound from '../Pages/Not Found/NotFound';
 
 function Router() {
@@ -16,7 +17,7 @@ function Router() {
             <Route path={ROUTES.profile} element={<ProtectedRoute><Profile /></ProtectedRoute>} />
 
             <Route path={ROUTES.dashboard} element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path={ROUTES.taxes} element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path={ROUTES.taxes} element={<ProtectedRoute><Taxes /></ProtectedRoute>} />
             <Route path={ROUTES.future} element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path={ROUTES.cashflow} element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
 
