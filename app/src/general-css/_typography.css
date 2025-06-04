@@ -1,11 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wdth,wght@0,75,100..900;1,75,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wdth,wght@0,75,100..900;1,75,100..900&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');
 
 :root {
-    --font-heading-1: 900 6.4rem 'Noto Sans', sans-serif;
+    --font-heading-1: 900 6.4rem 'Roboto Condensed', sans-serif;
     /* --font-heading-1: 6.4rem 'Impact', sans-serif; */
-    --font-heading-2: 900 4.0rem 'Noto Sans', sans-serif;
-    --font-heading-3: 900 3.6rem 'Noto Sans', sans-serif;
-    --font-heading-4: 900 3rem 'Noto Sans', sans-serif;
+    --font-heading-2: 900 4.0rem 'Roboto Condensed', sans-serif;
+    --font-heading-3: 900 3.6rem 'Roboto Condensed', sans-serif;
+    --font-heading-4: 900 3rem 'Roboto Condensed', sans-serif;
     --font-subheading: 400 2.0rem 'Inter', sans-serif;
     --font-paragraph: 400 1.4rem 'Inter', sans-serif;
     --font-small-text: 400 1.0rem 'Inter', sans-serif;
@@ -13,10 +14,10 @@
 
 @media (max-width: 600px) {
     :root {
-        --font-heading-1: 900 3.2rem 'Noto Sans', sans-serif;
-        --font-heading-2: 900 2.4rem 'Noto Sans', sans-serif;
-        --font-heading-3: 900 2.0rem 'Noto Sans', sans-serif;
-        --font-heading-4: 900 1.4rem 'Noto Sans', sans-serif;
+        --font-heading-1: 900 3.2rem 'Roboto Condensed', sans-serif;
+        --font-heading-2: 900 2.4rem 'Roboto Condensed', sans-serif;
+        --font-heading-3: 900 2.0rem 'Roboto Condensed', sans-serif;
+        --font-heading-4: 900 1.4rem 'Roboto Condensed', sans-serif;
         --font-subheading: 400 1.2rem 'Inter', sans-serif;
         --font-paragraph: 400 1.0rem 'Inter', sans-serif;
         --font-small-text: 400 0.8rem 'Inter', sans-serif;
