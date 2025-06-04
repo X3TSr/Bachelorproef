@@ -1,7 +1,7 @@
 import React from 'react'
 import style from './Profile.module.css'
 import useFetchUser from '../../hooks/useFetchUser';
-import InputText from '../../Components/Inputs/Input';
+import InputText from '../../Components/Input/Input';
 import Loading from '../../Components/Loading/Loading';
 
 const Profile = () => {

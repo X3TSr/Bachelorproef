@@ -4,7 +4,7 @@ import ROUTES from '../../consts/ROUTES';
 import { useUserStore } from '../../Store/userStore';
 import { Link, Navigate } from 'react-router-dom';
 
-import Input from '../../Components/Inputs/Input';
+import Input from '../../Components/Input/Input';
 import Button from '../../Components/Button/Button';
 
 const Signup = () => {
