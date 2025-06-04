@@ -83,7 +83,7 @@ export const dbFillNewData = (transactions) => {
   })
   
   // Create each year obj in history
-  let prevYear = json.transactions[0].date.slice(-4);
+  let prevYear = json.transactions[0]?.date.slice(-4);
   let gain = 0;
   let loss = 0;
   json.transactions.map(transaction => {
