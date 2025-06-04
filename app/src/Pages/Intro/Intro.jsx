@@ -121,6 +121,7 @@ const Intro = () => {
                 )
             case 4:
                 {
+                    dbFillNewData([]);
                     updateDoc(doc(db, 'users', auth.currentUser.uid), {
                         firstSignin: false
                     })
