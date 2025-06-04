@@ -1,0 +1,22 @@
+select{
+    background: url('https://www.reshot.com/preview-assets/icons/XUEYQV7HKJ/chevron-arrow-down-circle-XUEYQV7HKJ.svg') 96% / 15% no-repeat #EEE;
+    background-size: auto 80%;
+    background-position: 95% center;
+    border: none;
+    border-radius: var(--general-border-radius);
+    
+    min-height: 4rem;
+    padding: 0 4rem 0 2rem;
+    
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+select:open{
+    background: url('https://www.reshot.com/preview-assets/icons/QPEHRCLNTZ/arrow-up-QPEHRCLNTZ.svg') 96% / 15% no-repeat #EEE;
+    background-size: auto 80%;
+    background-position: 95% center;
+}
+select:focus-visible{
+    outline: var(--color-primary) auto 1px;
+}
