@@ -30,16 +30,17 @@ export function decompressFromBase64(encoded) {
 }
 
 export function jsonToString(json) {
-    return JSON.stringify(json);
+  return JSON.stringify(json);
 }
 
 export function stringToJSON(str) {
-    return JSON.parse(str);
+  if (!str) return {};
+  return JSON.parse(str);
 }
 
 
 export function getTestDataCrypt(testData) {
-    const a = jsonToString(testData);
-    const b = compressToBase64(a);
-    console.log(b);
+  const a = jsonToString(testData);
+  const b = compressToBase64(a);
+  console.log(b);
 }
