@@ -14,6 +14,7 @@ const Card = ({
     theme = 'dark',
     type = 'default',
     number = 'XXX.XX',
+    title = '',
     content = '',
     subDescription = '',
     subNumber = '',
@@ -32,6 +33,13 @@ const Card = ({
         ];
 
         switch (type) {
+            case 'text':
+                return (
+                    <div style={{ padding: '1rem 2rem' }}>
+                        <h2>{title}</h2>
+                        <p style={{ marginTop: '2rem' }}>{content}</p>
+                    </div>
+                )
             case 'budgetText':
                 return (
                     <div className={`flex fdc alignRight`}>

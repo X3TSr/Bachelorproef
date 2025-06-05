@@ -9,6 +9,9 @@
 
     backdrop-filter: blur(1rem);
 }
+.card:has(div + .light){
+    color: var(--color-black);
+}
 
 .background{
     opacity: .4;
@@ -24,6 +27,8 @@
     background-color: var(--color-black);
 }
 .light{
+    opacity: .8;
+    
     background-color: var(--color-white);
 }
 
