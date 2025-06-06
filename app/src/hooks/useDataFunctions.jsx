@@ -50,8 +50,8 @@ export default function useDataFunctions() {
     }
 
     const getYearTotalIncome = (year = '') => {
+        if (!data?.transactions) return 0;
         year = year ? year : date.getFullYear();
-        console.log(year);
 
         let total = 0;
         data.transactions.map(transaction => {
@@ -74,6 +74,20 @@ export default function useDataFunctions() {
             highestIncome = getHighestValue(transaction, highestIncome);
         });
         return highestIncome;
+    }
+
+    const getYearTotalExpenses = (year = '') => {
+        if (!data?.transactions) return 0;
+        year = year ? year : date.getFullYear();
+
+        let total = 0;
+        data.transactions.map(transaction => {
+            if (transaction.type != 'expense') return;
+            if (getTransactionDate(transaction).year != year) return;
+            total += parseFloat(transaction.value);
+        });
+
+        return parseFloat(total).toFixed(2);
     }
 
     const getYearHighestExpense = (year = '') => {
@@ -143,6 +157,60 @@ export default function useDataFunctions() {
 
 
     // ========================
+    //          Taxes
+    // ========================
+    const brackets = {
+        first: { limit: 15200, rate: .25 },
+        second: { limit: 26830, rate: .4 },
+        third: { limit: 46440, rate: .45 },
+        fourth: { limit: Infinity, rate: .5 }
+    }
+
+    const getGrossTaxableIncome = () => {
+        const grossTaxableIncome = getYearTotalIncome();
+        return parseFloat(grossTaxableIncome).toFixed(2);
+    }
+
+    const getProfessionalCosts = () => {
+        const professionalCosts = getYearTotalExpenses();
+        return parseFloat(professionalCosts).toFixed(2);
+    }
+
+    const getSocialContribution = () => {
+        const netTaxableIncomeBeforeSocial = getGrossTaxableIncome() - getProfessionalCosts()
+        const socialContributionPercent = .205;
+        const socialContribution = netTaxableIncomeBeforeSocial * socialContributionPercent;
+        return parseFloat(socialContribution).toFixed(2);
+    }
+
+    const getNetTaxableIncome = () => {
+        const netTaxableIncomeBeforeSocial = getGrossTaxableIncome() - getProfessionalCosts()
+        const netTaxableIncome = netTaxableIncomeBeforeSocial - getSocialContribution()
+        return parseFloat(netTaxableIncome).toFixed(2);
+    }
+
+    const getTaxFreeSum = () => {
+        const taxFreeSum = 10570;
+        return parseFloat(taxFreeSum * brackets.first.rate).toFixed(2);
+    }
+
+    const getTaxToPay = () => {
+        let finalTaxableIncome = getNetTaxableIncome() - getTaxFreeSum();
+        let taxToPay = 0;
+
+        Array.from(brackets).forEach(bracket => {
+            if (finalTaxableIncome <= 0) return
+            finalTaxableIncome >= bracket.limit ?
+                taxToPay += bracket.limit * bracket.rate :
+                taxToPay += finalTaxableIncome * bracket.rate;
+            finalTaxableIncome -= bracket.limit;
+        });
+        return parseFloat(taxToPay).toFixed(2);
+    }
+
+
+
+    // ========================
     //          EXPORT
     // ========================
     return {
@@ -150,11 +218,20 @@ export default function useDataFunctions() {
         getYearNet,
         getYearTotalIncome,
         getYearHighestIncome,
+        getYearTotalExpenses,
         getYearHighestExpense,
+
         getAllTimeTotalIncome,
         getAllTimeHighestIncome,
         getAllTimeTotalExpenses,
         getAllTimeHighestExpense,
-        getAllTimeNet
+        getAllTimeNet,
+
+        getGrossTaxableIncome,
+        getProfessionalCosts,
+        getSocialContribution,
+        getNetTaxableIncome,
+        getTaxFreeSum,
+        getTaxToPay,
     }
 }
