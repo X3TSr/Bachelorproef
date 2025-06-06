@@ -50,9 +50,9 @@ const Dashboard = () => {
                         <Card
                             type='percent'
                             content='Year High Income'
-                            number={(getAllTimeHighestIncome()?.value ?? 1 / getAllTimeTotalIncome() == 0 ? 1 : getAllTimeTotalIncome() * 100).toFixed(2)}
-                            subDescription={getAllTimeHighestIncome()?.label}
-                            subNumber={getAllTimeHighestIncome()?.value}
+                            number={(getAllTimeHighestIncome().value ?? 1 / (getAllTimeTotalIncome() == 0) ? 1 : getAllTimeTotalIncome() * 100).toFixed(2)}
+                            subDescription={getAllTimeHighestIncome().label}
+                            subNumber={getAllTimeHighestIncome().value}
                         />
                     </div>
                     <Link to={ROUTES.cashflow}>
