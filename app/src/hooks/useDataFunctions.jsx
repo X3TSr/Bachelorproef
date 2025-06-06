@@ -42,15 +42,8 @@ export default function useDataFunctions() {
     // ========================
     //          BY YEAR
     // ========================
-    const getYearNet = () => {
-        const lastYearGain = data.history.slice(-1)[0].gain;
-        const lastYearLoss = data.history.slice(-1)[0].loss;
-
-        return parseFloat(lastYearGain - (lastYearLoss * -1));
-    }
-
     const getYearTotalIncome = (year = '') => {
-        if (!data?.transactions) return 0;
+        if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return (0).toFixed(2);
         year = year ? year : date.getFullYear();
 
         let total = 0;
@@ -64,6 +57,7 @@ export default function useDataFunctions() {
     }
 
     const getYearHighestIncome = (year = '') => {
+        if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return { label: '', value: 0 };
         const date = new Date;
         year = year ? year : date.getFullYear();
 
@@ -77,7 +71,7 @@ export default function useDataFunctions() {
     }
 
     const getYearTotalExpenses = (year = '') => {
-        if (!data?.transactions) return 0;
+        if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return (0).toFixed(2);
         year = year ? year : date.getFullYear();
 
         let total = 0;
@@ -91,6 +85,7 @@ export default function useDataFunctions() {
     }
 
     const getYearHighestExpense = (year = '') => {
+        if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return { label: '', value: 0 };
         year = year ? year : date.getFullYear();
 
         let highestExpense = data.transactions[0];
@@ -103,12 +98,17 @@ export default function useDataFunctions() {
         return highestExpense;
     }
 
+    const getYearNet = () => {
+        return parseFloat(getYearTotalIncome() - getYearTotalExpenses());
+    }
+
 
 
     // ========================
     //          ALL TIME
     // ========================
     const getAllTimeTotalIncome = () => {
+        if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return (0).toFixed(2);
         let total = 0;
         data.transactions.map(transaction => {
             if (transaction.type != 'income') return;
@@ -119,6 +119,7 @@ export default function useDataFunctions() {
     }
 
     const getAllTimeHighestIncome = () => {
+        if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return { label: '', value: 0 };
         let highestIncome = data.transactions[0];
         data.transactions.map(transaction => {
             if (transaction.type != 'income') return;
@@ -129,6 +130,7 @@ export default function useDataFunctions() {
     }
 
     const getAllTimeTotalExpenses = () => {
+        if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return (0).toFixed(2);
         let total = 0;
         data.transactions.map(transaction => {
             if (transaction.type != 'expense') return;
@@ -139,6 +141,7 @@ export default function useDataFunctions() {
     }
 
     const getAllTimeHighestExpense = () => {
+        if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return { label: '', value: 0 };
         let highestExpense = data.transactions[0];
         data.transactions.map(transaction => {
             if (transaction.type != 'expense') return;
