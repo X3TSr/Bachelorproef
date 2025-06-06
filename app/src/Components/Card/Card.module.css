@@ -12,6 +12,9 @@
 .card:has(div + .light){
     color: var(--color-black);
 }
+.card:has(div + .light) h4{
+    opacity: .3;
+}
 
 .background{
     opacity: .4;
