@@ -1,0 +1,48 @@
+.sectionTaxes{
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    
+    height: 100vh;
+}
+.subtitle{
+    opacity: .5;
+
+    color: var(--color-white);
+    font: var(--font-subheading);
+    text-align: center;
+
+    margin: 2rem 10vw;
+}
+
+.taxCardContainer{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 3.2rem;
+
+    width: 60vw;
+    margin-top: 2rem;
+}
+.taxCardContainer > * {
+    width: unset;
+    height: unset;
+    padding-left: 6.4rem;
+}
+.taxCardContainer > *:nth-child(4n+1),
+.taxCardContainer > *:nth-child(4n+4){
+    flex-grow: 2;
+}
+
+.tipCardContainer{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6.4rem;
+
+    width: 60vw;
+    margin-top: 8rem;
+}
