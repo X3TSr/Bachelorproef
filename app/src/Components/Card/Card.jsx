@@ -37,7 +37,14 @@ const Card = ({
                 return (
                     <div style={{ padding: '1rem 2rem' }}>
                         <h2>{title}</h2>
-                        <p style={{ marginTop: '2rem' }}>{content}</p>
+                        <p style={{ marginTop: '2rem' }}>{
+                            content.split('\n').map((line, idx) => (
+                                <React.Fragment key={idx}>
+                                    {line}
+                                    <br /><br />
+                                </React.Fragment>
+                            ))
+                        }</p>
                     </div>
                 )
             case 'budgetText':
