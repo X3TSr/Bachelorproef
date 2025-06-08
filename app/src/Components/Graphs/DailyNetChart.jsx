@@ -5,7 +5,7 @@ import useDataFunctions from '../../hooks/useDataFunctions';
 
 const DailyNetChart = () => {
 
-    const { getTransactionDate, getMonthTransactions } = useDataFunctions();
+    const { getTransactionDate, getMonthAllTransactions } = useDataFunctions();
 
     const getColor = (bar) => {
         const green = getComputedStyle(document.getElementById('root')).getPropertyValue('--color-green');
@@ -14,7 +14,7 @@ const DailyNetChart = () => {
         return bar.data.isNegative ? red : green;
     };
 
-    const monthTransactions = getMonthTransactions('042025');
+    const monthTransactions = getMonthAllTransactions('042025');
 
     const dailyData = {};
     monthTransactions.map((transaction) => {
