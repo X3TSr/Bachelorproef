@@ -1,7 +1,7 @@
 import { ResponsiveBar } from '@nivo/bar'
 import { useTooltip } from '@nivo/tooltip'
 
-import * as modules from '../../../general-js/scripts';
+import * as modules from '../../general-js/scripts';
 
 
 const getColor = (bar) => {
@@ -143,7 +143,7 @@ const CustomRoundedBars = ({ bars }) => {
     );
 };
 
-const CustomBarGraph = ({ inputData, inputKeys, numberOfYears = 0 }) => {
+const YearHistoryChart = ({ inputData, inputKeys, numberOfYears = 0 }) => {
     return (
         <ResponsiveBar
             data={inputData.slice((numberOfYears * -1), -1)}
@@ -212,4 +212,4 @@ const CustomBarGraph = ({ inputData, inputKeys, numberOfYears = 0 }) => {
     );
 };
 
-export default CustomBarGraph;
+export default YearHistoryChart;

@@ -3,11 +3,6 @@ import style from './Card.module.css'
 
 import * as modules from '../../general-js/scripts'
 
-import CustomBarGraph from './components/customBarGraph';
-import useFetchData from '../../hooks/useFetchData';
-
-
-
 const Card = ({
     size = [0, 0],
     classN = '',
@@ -18,20 +13,10 @@ const Card = ({
     content = '',
     subDescription = '',
     subNumber = '',
+    children
 }) => {
 
     const checkType = () => {
-
-        const { data } = useFetchData();
-        if (!data) return;
-
-        const userData = data.history;
-
-        const keys = [
-            'gain',
-            'loss',
-        ];
-
         switch (type) {
             case 'text':
                 return (
@@ -68,7 +53,7 @@ const Card = ({
                         <h4 className={`${style.cardTitle}`}>{content}</h4>
                     </div>
                 )
-            case 'graph':
+            case 'graphBottom':
                 return (
                     <div className={`flex fdc alignCenter`}>
                         <div className={`flex justifySpaceBetween w100`}>
@@ -78,7 +63,21 @@ const Card = ({
                             {number >= 0 && <h3 style={{ color: 'var(--color-green)' }}>€ {parseFloat(number).toFixed(2)}</h3>}
                         </div>
                         <div className={`${style.graph}`}>
-                            <CustomBarGraph inputData={userData} inputKeys={keys} numberOfYears={6} />
+                            {children}
+                        </div>
+                    </div>
+                )
+            case 'graphTop':
+                return (
+                    <div className={`flex fdc alignCenter`}>
+                        <div className={`${style.graph}`}>
+                            {children}
+                        </div>
+                        <div className={`flex justifySpaceBetween w100`}>
+                            <h3 className={`${style.cardTitle}`}>{content}</h3>
+                            {number == 'XXX.XX' && <h3>{number}</h3>}
+                            {number < 0 && <h3 style={{ color: 'var(--color-red)' }}>€ {parseFloat(number).toFixed(2)}</h3>}
+                            {number >= 0 && <h3 style={{ color: 'var(--color-green)' }}>€ {parseFloat(number).toFixed(2)}</h3>}
                         </div>
                     </div>
                 )

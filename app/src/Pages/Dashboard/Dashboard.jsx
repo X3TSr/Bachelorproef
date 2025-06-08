@@ -14,6 +14,7 @@ import Card from '../../Components/Card/Card';
 import Loading from '../../Components/Loading/Loading';
 import useDataFunctions from '../../hooks/useDataFunctions';
 import Intro from '../Intro/Intro';
+import YearHistoryChart from '../../Components/Graphs/YearHistoryChart';
 
 const Dashboard = () => {
 
@@ -26,6 +27,15 @@ const Dashboard = () => {
         getAllTimeTotalIncome,
         getAllTimeTotalExpenses
     } = useDataFunctions();
+
+
+    if (!data) return;
+    const userData = data.history;
+    const keys = [
+        'gain',
+        'loss',
+    ];
+
 
     if (loading || !data) return <Loading />
     if (error) return <p style={{ color: 'var(--color-red)' }}>Error: {error}</p>
@@ -46,7 +56,9 @@ const Dashboard = () => {
                         <Card type='budgetText' content='Total' number={getAllTimeNet()} />
                         <Card type='budgetTextG' content='Income' number={getAllTimeTotalIncome()} />
                         <Card type='budgetTextR' content='Expenses' number={getAllTimeTotalExpenses()} />
-                        <Card type='graph' classN='span2' content='This Year Net' number={getYearNet()} />
+                        <Card type='graphBottom' classN='span2' content='This Year Net' number={getYearNet()}>
+                            <YearHistoryChart inputData={userData} inputKeys={keys} numberOfYears={6} />
+                        </Card>
                         <Card
                             type='percent'
                             content='Year High Income'
