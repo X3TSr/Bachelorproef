@@ -32,9 +32,19 @@ export default function useDataFunctions() {
         const day = transaction.date.split('').splice(0, 2).join('');
         const month = transaction.date.split('').splice(2, 2).join('');
         const year = transaction.date.split('').splice(-4).join('');
-        const date = { day, month, year };
+        const dateObj = { day, month, year };
 
-        return date;
+        return dateObj;
+    }
+
+    const getCurrentDate = () => {
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear().toString();
+        const full = day + month + year;
+        const dateObj = { day, month, year, full };
+
+        return dateObj;
     }
 
 
@@ -42,18 +52,15 @@ export default function useDataFunctions() {
     // ========================
     //          BY DAY
     // ========================
-    const getDayTransactions = (dayMonthYearValue) => {
+    const getDayAllTransactions = (dayMonthYearValue = '') => {
         if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return [];
-        if (!dayMonthYearValue) {
-            console.error('No date given');
-            return [];
-        }
+        dayMonthYearValue = dayMonthYearValue ? dayMonthYearValue : getCurrentDate().full;
 
         const transactions = [];
         data.transactions.map(transaction => {
-            if (getTransactionDate(transaction).day != getTransactionDate(dayMonthYearValue).day) return;
-            if (getTransactionDate(transaction).month != getTransactionDate(dayMonthYearValue).month) return;
             if (getTransactionDate(transaction).year != getTransactionDate(dayMonthYearValue).year) return;
+            if (getTransactionDate(transaction).month != getTransactionDate(dayMonthYearValue).month) return;
+            if (getTransactionDate(transaction).day != getTransactionDate(dayMonthYearValue).day) return;
             transactions.push(transaction);
         });
 
@@ -61,25 +68,58 @@ export default function useDataFunctions() {
     }
 
 
-
     // ========================
     //          BY MONTH
     // ========================
-    const getMonthTransactions = (monthYearValue) => {
+    const getMonthAllTransactions = (monthYearValue = '') => {
         if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return [];
-        if (!monthYearValue) {
-            console.error('No date given');
-            return [];
-        }
+        monthYearValue = monthYearValue ? monthYearValue : getCurrentDate().full.slice(2);
 
         const transactions = [];
         data.transactions.map(transaction => {
-            if (getTransactionDate(transaction).month != monthYearValue.slice(0, 2)) return;
             if (getTransactionDate(transaction).year != monthYearValue.slice(-4)) return;
+            if (getTransactionDate(transaction).month != monthYearValue.slice(0, 2)) return;
             transactions.push(transaction);
         });
 
         return transactions;
+    }
+
+    const getMonthTotalIncome = (monthYearValue = '') => {
+        if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return (0).toFixed(2);
+        monthYearValue = monthYearValue ? monthYearValue : getCurrentDate().full.slice(2);
+
+        let total = 0;
+        data.transactions.map(transaction => {
+            if (transaction.type != 'income') return;
+            if (getTransactionDate(transaction).year != monthYearValue.slice(-4)) return;
+            if (getTransactionDate(transaction).month != monthYearValue.slice(0, 2)) return;
+            total += parseFloat(transaction.value);
+        });
+
+        return parseFloat(total).toFixed(2);
+    }
+
+    const getMonthTotalExpenses = (monthYearValue = '') => {
+        if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return (0).toFixed(2);
+        monthYearValue = monthYearValue ? monthYearValue : getCurrentDate().full.slice(2);
+
+        let total = 0;
+        data.transactions.map(transaction => {
+            if (transaction.type != 'expense') return;
+            if (getTransactionDate(transaction).year != monthYearValue.slice(-4)) return;
+            if (getTransactionDate(transaction).month != monthYearValue.slice(0, 2)) return;
+            total += parseFloat(transaction.value);
+        });
+
+        return parseFloat(total).toFixed(2);
+    }
+
+    const getMonthNet = (monthYearValue = '') => {
+        if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return [];
+        monthYearValue = monthYearValue ? monthYearValue : getCurrentDate().full.slice(2);
+
+        return parseFloat(getMonthTotalIncome(monthYearValue) - getMonthTotalExpenses(monthYearValue));
     }
 
 
@@ -89,7 +129,6 @@ export default function useDataFunctions() {
     // ========================
     const getYearAllTransactions = (year = '') => {
         if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return [];
-        const date = new Date;
         year = year ? year : date.getFullYear();
 
         let transactions = [];
@@ -117,7 +156,6 @@ export default function useDataFunctions() {
 
     const getYearHighestIncome = (year = '') => {
         if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return { label: '', value: 0 };
-        const date = new Date;
         year = year ? year : date.getFullYear();
 
         let highestIncome = data.transactions[0];
@@ -277,10 +315,14 @@ export default function useDataFunctions() {
     // ========================
     return {
         getTransactionDate,
+        getCurrentDate,
 
-        getDayTransactions,
+        getDayAllTransactions,
 
-        getMonthTransactions,
+        getMonthAllTransactions,
+        getMonthTotalIncome,
+        getMonthTotalExpenses,
+        getMonthNet,
 
         getYearAllTransactions,
         getYearTotalIncome,
