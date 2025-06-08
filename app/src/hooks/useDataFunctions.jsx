@@ -40,8 +40,67 @@ export default function useDataFunctions() {
 
 
     // ========================
+    //          BY DAY
+    // ========================
+    const getDayTransactions = (dayMonthYearValue) => {
+        if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return [];
+        if (!dayMonthYearValue) {
+            console.error('No date given');
+            return [];
+        }
+
+        const transactions = [];
+        data.transactions.map(transaction => {
+            if (getTransactionDate(transaction).day != getTransactionDate(dayMonthYearValue).day) return;
+            if (getTransactionDate(transaction).month != getTransactionDate(dayMonthYearValue).month) return;
+            if (getTransactionDate(transaction).year != getTransactionDate(dayMonthYearValue).year) return;
+            transactions.push(transaction);
+        });
+
+        return transactions;
+    }
+
+
+
+    // ========================
+    //          BY MONTH
+    // ========================
+    const getMonthTransactions = (monthYearValue) => {
+        if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return [];
+        if (!monthYearValue) {
+            console.error('No date given');
+            return [];
+        }
+
+        const transactions = [];
+        data.transactions.map(transaction => {
+            if (getTransactionDate(transaction).month != monthYearValue.slice(0, 2)) return;
+            if (getTransactionDate(transaction).year != monthYearValue.slice(-4)) return;
+            transactions.push(transaction);
+        });
+
+        return transactions;
+    }
+
+
+
+    // ========================
     //          BY YEAR
     // ========================
+    const getYearAllTransactions = (year = '') => {
+        if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return [];
+        const date = new Date;
+        year = year ? year : date.getFullYear();
+
+        let transactions = [];
+        data.transactions.map((transaction) => {
+            if (getTransactionDate(transaction).year != year) return;
+            transactions.push(transaction);
+        })
+
+        return transactions;
+    }
+
     const getYearTotalIncome = (year = '') => {
         if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return (0).toFixed(2);
         year = year ? year : date.getFullYear();
@@ -218,11 +277,17 @@ export default function useDataFunctions() {
     // ========================
     return {
         getTransactionDate,
-        getYearNet,
+
+        getDayTransactions,
+
+        getMonthTransactions,
+
+        getYearAllTransactions,
         getYearTotalIncome,
         getYearHighestIncome,
         getYearTotalExpenses,
         getYearHighestExpense,
+        getYearNet,
 
         getAllTimeTotalIncome,
         getAllTimeHighestIncome,
