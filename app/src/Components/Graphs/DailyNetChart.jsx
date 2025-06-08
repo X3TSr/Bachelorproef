@@ -5,8 +5,14 @@ import useDataFunctions from '../../hooks/useDataFunctions';
 
 const DailyNetChart = () => {
 
-    const { getTransactionDate, getMonthAllTransactions } = useDataFunctions();
+    const {
+        getCurrentDate,
+        getTransactionDate,
+        getMonthAllTransactions
+    } = useDataFunctions();
 
+    // Helper function to get the green and red used by the app
+    // This returns depending on if the value is positive or negative
     const getColor = (bar) => {
         const green = getComputedStyle(document.getElementById('root')).getPropertyValue('--color-green');
         const red = getComputedStyle(document.getElementById('root')).getPropertyValue('--color-red');
@@ -14,9 +20,12 @@ const DailyNetChart = () => {
         return bar.data.isNegative ? red : green;
     };
 
-    const monthTransactions = getMonthAllTransactions('042025');
+    // Get the transactions of the last month
+    const lastMonth = (getCurrentDate().month - 1).toString().padStart(2, '0') + getCurrentDate().year;
+    const monthTransactions = getMonthAllTransactions(lastMonth);
 
     const dailyData = {};
+    // Group in an array the transactions on each day in the given month
     monthTransactions.map((transaction) => {
         const transactionDay = getTransactionDate(transaction).day;
         const convertedTransactionDay = transactionDay[0] == 0 ? transactionDay.replace('0', '') : transactionDay;
@@ -24,10 +33,12 @@ const DailyNetChart = () => {
         if (!Object.hasOwn(dailyData, convertedTransactionDay)) dailyData[convertedTransactionDay] = [];
         dailyData[convertedTransactionDay].push(transaction);
     });
+    // Fill in the days with no transactions
     for (let i = 1; i <= 30; i++) {
         if (!Object.hasOwn(dailyData, i)) dailyData[i] = [];
     }
 
+    // Calculate the net values on each day
     const netData = Object.entries(dailyData).map((day) => {
         let net = 0;
         day[1].map((transaction) => {
