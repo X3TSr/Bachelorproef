@@ -146,7 +146,7 @@ const CustomRoundedBars = ({ bars }) => {
 const YearHistoryChart = ({ inputData, inputKeys, numberOfYears = 0 }) => {
     return (
         <ResponsiveBar
-            data={inputData.slice((numberOfYears * -1), -1)}
+            data={inputData.slice((numberOfYears * -1))}
             keys={inputKeys}
             indexBy="year"
 
@@ -154,7 +154,7 @@ const YearHistoryChart = ({ inputData, inputKeys, numberOfYears = 0 }) => {
             valueFormat={value => `€ ${value.toFixed(2)}`}
 
             enableTotals={true}
-            enableLabel={true}
+            enableLabel={false}
             labelSkipHeight={16}
 
             tooltip={({ id, value, color, indexValue }) => (
