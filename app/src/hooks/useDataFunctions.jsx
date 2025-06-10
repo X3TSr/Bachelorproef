@@ -213,7 +213,7 @@ export default function useDataFunctions() {
     }
 
     const getYearNet = () => {
-        return parseFloat(getYearTotalIncome() - getYearTotalExpenses());
+        return parseFloat(getYearTotalIncome() - getYearTotalExpenses()).toFixed(2);
     }
 
 
