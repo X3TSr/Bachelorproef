@@ -28,6 +28,23 @@ export default function useDataFunctions() {
         return smallerThan(aVal, bVal) ? a : b
     }
 
+    const sortTransactionsByDate = (transactions, order = 'asc') => {
+        const factor = order === 'desc' ? -1 : 1;
+
+        return transactions.slice().sort((a, b) => {
+            const dateA = getTransactionDate(a);
+            const dateB = getTransactionDate(b);
+
+            if (dateA.year !== dateB.year) {
+                return (dateA.year - dateB.year) * factor;
+            }
+            if (dateA.month !== dateB.month) {
+                return (dateA.month - dateB.month) * factor;
+            }
+            return (dateA.day - dateB.day) * factor;
+        });
+    }
+
     const getTransactionDate = (transaction) => {
         const day = transaction.date.split('').splice(0, 2).join('');
         const month = transaction.date.split('').splice(2, 2).join('');
@@ -254,6 +271,12 @@ export default function useDataFunctions() {
         ).toFixed(2);
     }
 
+    const getAllTimeTransactions = () => {
+        if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return [{ label: '', value: 0 }];
+        const transactions = data.transactions.slice();
+        return transactions;
+    }
+
 
 
     // ========================
@@ -314,6 +337,7 @@ export default function useDataFunctions() {
     //          EXPORT
     // ========================
     return {
+        sortTransactionsByDate,
         getTransactionDate,
         getCurrentDate,
 
@@ -336,6 +360,7 @@ export default function useDataFunctions() {
         getAllTimeTotalExpenses,
         getAllTimeHighestExpense,
         getAllTimeNet,
+        getAllTimeTransactions,
 
         getGrossTaxableIncome,
         getProfessionalCosts,
