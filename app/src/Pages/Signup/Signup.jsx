@@ -54,7 +54,7 @@ const Signup = () => {
                 <Input type='email' htmlFor='email' onchange={setEmail} content={email} onKeyDown={checkEnter} />
                 <Input type='password' htmlFor='password' onchange={setPassword} content={password} onKeyDown={checkEnter} />
                 <Button text='Maak account' onclick={handleSignup} classN={`${style.cta_btn}`} ref={signinBtn} />
-                <p>Al een account? Geen probleem klik <Link to={ROUTES.login} className={`${style.switch_link}`}>hier</Link> om aan te melden</p>
+                <p>Already have an account? Login <Link to={ROUTES.login} className={`${style.switch_link}`}>here</Link></p>
             </div>
         </section>
     );

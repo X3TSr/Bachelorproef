@@ -47,7 +47,7 @@ function Login() {
         <Input type='email' htmlFor='email' onchange={setEmail} content={email} onKeyDown={checkEnter} />
         <Input type='password' htmlFor='Password' onchange={setPassword} content={password} onKeyDown={checkEnter} />
         <Button text='Login' onclick={handleLogin} ref={loginBtn} />
-        <p>Nog geen account? Geen probleem maak <Link to={ROUTES.signup} className={`${style.switch_link}`}>hier</Link> een nieuw account aan</p>
+        <p>No account yet? Register <Link to={ROUTES.signup} className={`${style.switch_link}`}>here</Link></p>
       </div>
     </section>
   )
