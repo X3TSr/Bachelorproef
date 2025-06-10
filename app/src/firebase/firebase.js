@@ -53,7 +53,8 @@ export const dbFillNewData = (transactions) => {
       "label": `${transaction['Free-format reference']}`,
       "type": `${parseFloat(transaction['Amount']) > 0 ? 'income' : 'expense'}`,
       "value": `${transaction['Amount'].replace('-', '').replace(',', '.')}`,
-      "date": `${transaction['Date'].replaceAll('/', '')}`
+      "date": `${transaction['Date'].replaceAll('/', '')}`,
+      "tag": ``
     })
   })
   
