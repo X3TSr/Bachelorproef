@@ -13,6 +13,7 @@ const Card = ({
     content = '',
     subDescription = '',
     subNumber = '',
+    hideTitle,
     children
 }) => {
 
@@ -57,10 +58,10 @@ const Card = ({
                 return (
                     <div className={`flex fdc alignCenter`}>
                         <div className={`flex justifySpaceBetween w100`}>
-                            <h3 className={`${style.cardTitle}`}>{content}</h3>
-                            {number == 'XXX.XX' && <h3>{number}</h3>}
-                            {number < 0 && <h3 style={{ color: 'var(--color-red)' }}>€ {parseFloat(number).toFixed(2)}</h3>}
-                            {number >= 0 && <h3 style={{ color: 'var(--color-green)' }}>€ {parseFloat(number).toFixed(2)}</h3>}
+                            {!hideTitle && <h3 className={`${style.cardTitle}`}>{content}</h3>}
+                            {!hideTitle && number == 'XXX.XX' && <h3>{number}</h3>}
+                            {!hideTitle && number < 0 && <h3 style={{ color: 'var(--color-red)' }}>€ {parseFloat(number).toFixed(2)}</h3>}
+                            {!hideTitle && number >= 0 && <h3 style={{ color: 'var(--color-green)' }}>€ {parseFloat(number).toFixed(2)}</h3>}
                         </div>
                         <div className={`${style.graph}`}>
                             {children}
@@ -74,10 +75,10 @@ const Card = ({
                             {children}
                         </div>
                         <div className={`flex justifySpaceBetween w100`}>
-                            <h3 className={`${style.cardTitle}`}>{content}</h3>
-                            {number == 'XXX.XX' && <h3>{number}</h3>}
-                            {number < 0 && <h3 style={{ color: 'var(--color-red)' }}>€ {parseFloat(number).toFixed(2)}</h3>}
-                            {number >= 0 && <h3 style={{ color: 'var(--color-green)' }}>€ {parseFloat(number).toFixed(2)}</h3>}
+                            {!hideTitle && <h3 className={`${style.cardTitle}`}>{content}</h3>}
+                            {!hideTitle && number == 'XXX.XX' && <h3>{number}</h3>}
+                            {!hideTitle && number < 0 && <h3 style={{ color: 'var(--color-red)' }}>€ {parseFloat(number).toFixed(2)}</h3>}
+                            {!hideTitle && number >= 0 && <h3 style={{ color: 'var(--color-green)' }}>€ {parseFloat(number).toFixed(2)}</h3>}
                         </div>
                     </div>
                 )
@@ -90,6 +91,16 @@ const Card = ({
                             <p>{subDescription}</p>
                             <h4>€ {subNumber}</h4>
                         </div>
+                    </div>
+                )
+            case 'transactions':
+                return (
+                    <div>
+                        <div className={`flex alignRight justifySpaceBetween`} style={{ marginBottom: '2rem' }}>
+                            <h2>Transactions</h2>
+                            <p style={{ textDecoration: 'underline', cursor: 'pointer' }}>All transactions</p>
+                        </div>
+                        {children}
                     </div>
                 )
 
