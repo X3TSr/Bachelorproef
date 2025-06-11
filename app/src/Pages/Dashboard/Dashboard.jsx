@@ -7,8 +7,6 @@ import ROUTES from '../../consts/ROUTES';
 import useFetchUser from '../../hooks/useFetchUser';
 import useFetchData from '../../hooks/useFetchData';
 
-import testData from '../../consts/testData.json';
-
 import Button from '../../Components/Button/Button';
 import Card from '../../Components/Card/Card';
 import Loading from '../../Components/Loading/Loading';
