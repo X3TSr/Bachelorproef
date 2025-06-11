@@ -7,15 +7,31 @@ function InputText({
   type = 'text',
   content = '',
   editable = false,
+  ref,
+  min = 0,
+  max = 0,
+  step = 1,
   onKeyDown = () => { },
   onchange = () => { },
-  editOnClick = () => { }
+  editOnClick = () => { },
 }) {
   return (
     <div className={`${style.parent}`}>
       <div className={`${style.container}`}>
         <label htmlFor={htmlFor} className={`${style.label}`}>{modules.textCasingModule.toTitleCase(htmlFor)}</label >
-        <input type={type} name={htmlFor} id={htmlFor} className={`${style.input}`} onKeyDown={onKeyDown} onChange={(e) => onchange(e.target.value)} value={content} />
+        <input
+          type={type}
+          name={htmlFor}
+          id={htmlFor}
+          className={`${style.input}`}
+          onKeyDown={onKeyDown}
+          onChange={(e) => onchange(e.target.value)}
+          value={content}
+          ref={ref}
+          min={min}
+          max={max}
+          step={step}
+        />
       </div>
       <span className={`material-symbols-outlined ${style.edit} ${editable ? '' : style.hidden}`} onClick={editOnClick}>edit</span>
     </div>

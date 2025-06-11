@@ -80,3 +80,10 @@
 .healthMeterBlock[data-selected="true"]{
     opacity: 1;
 }
+
+.sliderValues{
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1rem;
+    margin-bottom: -8rem;
+}

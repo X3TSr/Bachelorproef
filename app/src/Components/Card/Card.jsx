@@ -1,10 +1,8 @@
-import React from 'react'
+import React, { forwardRef } from 'react'
 import style from './Card.module.css'
-
-import * as modules from '../../general-js/scripts'
+import Input from '../Input/Input';
 
 const Card = ({
-    size = [0, 0],
     classN = '',
     theme = 'dark',
     type = 'default',
@@ -15,7 +13,8 @@ const Card = ({
     subNumber = '',
     hideTitle,
     score = 0,
-    children
+    children,
+    onchange = () => { },
 }) => {
 
     const checkType = () => {
@@ -98,7 +97,7 @@ const Card = ({
                 return (
                     <div className={`${style.transactions}`}>
                         <div className={`flex alignRight justifySpaceBetween`} style={{ marginBottom: '2rem' }}>
-                            <h2>Transactions</h2>
+                            <h2 className={`${style.cardTitle}`}>Transactions</h2>
                             <p style={{ textDecoration: 'underline', cursor: 'pointer', opacity: '.6' }}>All transactions</p>
                         </div>
                         <div>
@@ -110,7 +109,7 @@ const Card = ({
                 return (
                     <div className={`flex fdc h100`}>
                         <div className={`flex alignRight justifySpaceBetween`} style={{ marginBottom: '2rem' }}>
-                            <h2>Business Health</h2>
+                            <h2 className={`${style.cardTitle}`}>Business Health</h2>
                             <h4 style={{ opacity: '.6' }}>{content}</h4>
                         </div>
                         <div className={`${style.healthMeter}`}>
@@ -123,6 +122,18 @@ const Card = ({
                         </div>
                     </div>
                 )
+            case 'sliderProjection':
+                return (
+                    <div className={`flex fdc`} style={{ gap: '2rem' }}>
+                        <h2 className={`${style.cardTitle}`}>{title}</h2>
+                        <div className={`${style.sliderValues}`}>
+                            <p style={{ color: 'var(--color-red' }}>-50%</p>
+                            <p style={{ color: 'var(--color-white' }}>0%</p>
+                            <p style={{ color: 'var(--color-green' }}>+50%</p>
+                        </div>
+                        <Input type='range' min={-50} max={50} onchange={onchange} content={content} />
+                    </div>
+                )
 
             default:
                 return (
@@ -133,7 +144,7 @@ const Card = ({
 
     return (
         <>
-            <div /* style={{ width: size[0], height: size[1] }} */ className={`${style.card} ${classN}`}>
+            <div className={`${style.card} ${classN}`}>
                 {checkType()}
                 <div className={`${style.background} ${style[theme]}`}></div >
             </div >
