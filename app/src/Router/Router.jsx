@@ -8,6 +8,7 @@ import Profile from '../Pages/Profile/Profile';
 import Dashboard from '../Pages/Dashboard/Dashboard';
 import Taxes from '../Pages/Taxes/Taxes';
 import NotFound from '../Pages/Not Found/NotFound';
+import Cashflow from '../Pages/Cashflow/Cashflow';
 
 function Router() {
     return (
@@ -19,7 +20,7 @@ function Router() {
             <Route path={ROUTES.dashboard} element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path={ROUTES.taxes} element={<ProtectedRoute><Taxes /></ProtectedRoute>} />
             <Route path={ROUTES.future} element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-            <Route path={ROUTES.cashflow} element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+            <Route path={ROUTES.cashflow} element={<ProtectedRoute><Cashflow /></ProtectedRoute>} />
 
             <Route path={ROUTES.notfound} element={<NotFound />} />
         </Routes>
