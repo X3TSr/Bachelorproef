@@ -3,7 +3,7 @@ import React from 'react'
 import { ResponsiveBar } from '@nivo/bar';
 import useDataFunctions from '../../hooks/useDataFunctions';
 
-const DailyNetChart = () => {
+const DailyNetChart = ({ monthYearValue }) => {
 
     const {
         getCurrentDate,
@@ -20,9 +20,7 @@ const DailyNetChart = () => {
         return bar.data.isNegative ? red : green;
     };
 
-    // Get the transactions of the last month
-    const lastMonth = (getCurrentDate().month - 1).toString().padStart(2, '0') + getCurrentDate().year;
-    const monthTransactions = getMonthAllTransactions(lastMonth);
+    const monthTransactions = getMonthAllTransactions(monthYearValue);
 
     const dailyData = {};
     // Group in an array the transactions on each day in the given month
