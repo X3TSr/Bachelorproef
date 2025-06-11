@@ -1,0 +1,89 @@
+import React from 'react'
+import style from './Cashflow.module.css'
+
+import * as modules from '../../general-js/scripts';
+
+import Card from '../../Components/Card/Card';
+import DailyNetChart from '../../Components/Graphs/DailyNetChart';
+import useDataFunctions from '../../hooks/useDataFunctions';
+import Transaction from './components/Transaction';
+import Button from '../../Components/Button/Button';
+
+const Cashflow = () => {
+
+    const {
+        sortTransactionsByDate,
+        getCurrentDate,
+        getMonthNet,
+        getMonthTotalIncome,
+        getMonthTotalExpenses,
+        getMonthAllTransactions
+    } = useDataFunctions();
+
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    const thisMonth = (getCurrentDate().month).toString().padStart(2, '0') + getCurrentDate().year;
+    const formatedMonth = thisMonth.slice(0, 2)[0].replace('0', '') + thisMonth.slice(0, 2)[1];
+    const thisMonthName = months[formatedMonth];
+
+    const transactions = sortTransactionsByDate(getMonthAllTransactions());
+    const lastTenTransactions = modules.arrayModule.copy(transactions).splice(-10).reverse();
+
+    const getHealthScore = (totalIncome, totalExpenses) => {
+        if (totalIncome == 0 && totalExpenses == 0) return 0
+        if (totalIncome == 0 && totalExpenses > 0) return -2
+
+        const profitMargin = (totalIncome - totalExpenses) / totalIncome * 100;
+        if (profitMargin > 30) return 2
+        if (profitMargin > 15) return 1
+        if (profitMargin > 5) return 0
+        if (profitMargin > -5) return -1
+        if (profitMargin > -25) return -2
+
+        return -3
+    }
+
+    const getHealthLabel = (healthScore) => {
+        if (healthScore == 2) return 'Exellent'
+        if (healthScore == 1) return 'Good'
+        if (healthScore == 0) return 'Neutral'
+        if (healthScore == -1) return 'Warning'
+        if (healthScore == -2) return 'Bad'
+        if (healthScore == -3) return 'Very Bad'
+    }
+
+    return (
+        <>
+            <section className={`${style.sectionCashflow}`}>
+                <h1 style={{ textAlign: 'center' }} className='w100'>Cashflow</h1>
+                <h3 style={{ marginBottom: '3rem' }}>Here is your overview for <span className='colorPrimary'>{thisMonthName}</span></h3>
+                <div className={`${style.cashFlowGrid}`}>
+                    <div className={`${style.graphCard}`}>
+                        <Card classN={`${style.graphCardMain}`} type='graphTop' content={`${thisMonthName} Net Result`} number={getMonthNet()}>
+                            <DailyNetChart />
+                        </Card>
+                    </div>
+
+                    <Card type='transactions'>
+                        {
+                            lastTenTransactions.map((transaction, index) => {
+                                return <Transaction key={index} transaction={transaction} />
+                            })
+                        }
+                    </Card>
+
+                    <div className={`${style.wrapper}`}>
+                        <Button text='Add Cashflow' fontSize='h4' />
+                        <div className={`flex justifySpaceBetween`}>
+                            <Card type='budgetTextG' content='Income' number={getMonthTotalIncome()} />
+                            <Card type='budgetTextR' content='Expenses' number={getMonthTotalExpenses()} />
+                        </div>
+                    </div>
+
+                    <Card type='healthMeter' content={getHealthLabel(getHealthScore(getMonthTotalIncome(), getMonthTotalExpenses()))} score={getHealthScore(getMonthTotalIncome(), getMonthTotalExpenses())} />
+                </div>
+            </section>
+        </>
+    );
+};
+
+export default Cashflow;

@@ -1,0 +1,35 @@
+.sectionCashflow{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.cashFlowGrid{
+    display: grid;
+    grid-template-columns: 50vw 30vw;
+    grid-template-rows: 32rem;
+    justify-items: center;
+    gap: 4vw;
+
+    width: 100%;
+}
+.cashFlowGrid > *{
+    min-width: 100%;
+}
+
+.graphCard{
+    width: 40vw;
+}
+.graphCardMain > :first-child{
+    gap: 2rem;
+    padding: 1rem 2rem;
+}
+
+.wrapper{
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+}
+.wrapper > * {
+    gap: 2rem;
+}
