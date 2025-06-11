@@ -1,6 +1,6 @@
 .parent{
     z-index: -1;
-    position: absolute;
+    position: fixed;
     inset: 0;
 
     width: 100vw;
