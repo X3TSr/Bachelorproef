@@ -23,9 +23,9 @@ const Dashboard = () => {
     const {
         getYearNet,
         getAllTimeHighestIncome,
-        getAllTimeNet,
         getAllTimeTotalIncome,
-        getAllTimeTotalExpenses
+        getYearTotalIncome,
+        getYearTotalExpenses
     } = useDataFunctions();
 
 
@@ -48,15 +48,16 @@ const Dashboard = () => {
         <>
             <section className={`${style.sectionDashboard}`}>
                 <div className={`${style.title}`}>
-                    <h1>Dashboard</h1>
+                    <h1 style={{ marginBottom: '2rem' }}>Dashboard</h1>
                     <h3>Welcome back <span className='colorPrimary'>{user.firstName}</span></h3>
+                    <h3>Here is your <span className='colorPrimary'>2025</span> overview</h3>
                 </div>
                 <div className={`${style.content}`}>
                     <div className={`${style.cardContainer}`}>
-                        <Card type='budgetText' content='Total' number={getAllTimeNet()} />
-                        <Card type='budgetTextG' content='Income' number={getAllTimeTotalIncome()} />
-                        <Card type='budgetTextR' content='Expenses' number={getAllTimeTotalExpenses()} />
-                        <Card type='graphBottom' classN='span2' content='This Year Net' number={getYearNet()}>
+                        <Card type='budgetText' content='Total' number={getYearNet()} />
+                        <Card type='budgetTextG' content='Income' number={getYearTotalIncome()} />
+                        <Card type='budgetTextR' content='Expenses' number={getYearTotalExpenses()} />
+                        <Card type='graphBottom' classN='span2' hideTitle>
                             <YearHistoryChart inputData={userData} inputKeys={keys} numberOfYears={6} />
                         </Card>
                         <Card
