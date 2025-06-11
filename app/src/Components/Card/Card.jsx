@@ -14,6 +14,7 @@ const Card = ({
     subDescription = '',
     subNumber = '',
     hideTitle,
+    score = 0,
     children
 }) => {
 
@@ -105,10 +106,27 @@ const Card = ({
                         </div>
                     </div>
                 )
+            case 'healthMeter':
+                return (
+                    <div className={`flex fdc h100`}>
+                        <div className={`flex alignRight justifySpaceBetween`} style={{ marginBottom: '2rem' }}>
+                            <h2>Business Health</h2>
+                            <h4 style={{ opacity: '.6' }}>{content}</h4>
+                        </div>
+                        <div className={`${style.healthMeter}`}>
+                            <span className={`${style.healthMeterBlock}`} data-selected={score == -3 ? true : false}></span>
+                            <span className={`${style.healthMeterBlock}`} data-selected={score == -2 ? true : false}></span>
+                            <span className={`${style.healthMeterBlock}`} data-selected={score == -1 ? true : false}></span>
+                            <span className={`${style.healthMeterBlock}`} data-selected={score == 0 ? true : false}></span>
+                            <span className={`${style.healthMeterBlock}`} data-selected={score == 1 ? true : false}></span>
+                            <span className={`${style.healthMeterBlock}`} data-selected={score == 2 ? true : false}></span>
+                        </div>
+                    </div>
+                )
 
             default:
                 return (
-                    <div></div>
+                    <></>
                 )
         }
     }
