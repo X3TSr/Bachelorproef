@@ -20,6 +20,9 @@
 .graphCard{
     width: 40vw;
 }
+.graphCardMain{
+    height: 100%;
+}
 .graphCardMain > :first-child{
     gap: 2rem;
     padding: 1rem 2rem;
@@ -32,4 +35,5 @@
 }
 .wrapper > * {
     gap: 2rem;
+    height: 100%;
 }
