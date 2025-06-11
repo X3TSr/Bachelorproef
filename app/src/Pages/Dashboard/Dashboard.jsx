@@ -21,6 +21,7 @@ const Dashboard = () => {
     const { user, loading, error } = useFetchUser();
     const { data } = useFetchData();
     const {
+        getCurrentDate,
         getYearNet,
         getAllTimeHighestIncome,
         getAllTimeTotalIncome,
@@ -50,7 +51,7 @@ const Dashboard = () => {
                 <div className={`${style.title}`}>
                     <h1 style={{ marginBottom: '2rem' }}>Dashboard</h1>
                     <h3>Welcome back <span className='colorPrimary'>{user.firstName}</span></h3>
-                    <h3>Here is your <span className='colorPrimary'>2025</span> overview</h3>
+                    <h3>Here is your <span className='colorPrimary'>{getCurrentDate().year}</span> overview</h3>
                 </div>
                 <div className={`${style.content}`}>
                     <div className={`${style.cardContainer}`}>
