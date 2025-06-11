@@ -95,12 +95,14 @@ const Card = ({
                 )
             case 'transactions':
                 return (
-                    <div>
+                    <div className={`${style.transactions}`}>
                         <div className={`flex alignRight justifySpaceBetween`} style={{ marginBottom: '2rem' }}>
                             <h2>Transactions</h2>
-                            <p style={{ textDecoration: 'underline', cursor: 'pointer' }}>All transactions</p>
+                            <p style={{ textDecoration: 'underline', cursor: 'pointer', opacity: '.6' }}>All transactions</p>
                         </div>
-                        {children}
+                        <div>
+                            {children}
+                        </div>
                     </div>
                 )
 
