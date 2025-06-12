@@ -146,7 +146,7 @@ const CustomRoundedBars = ({ bars }) => {
 const YearHistoryChart = ({ inputData, inputKeys, numberOfYears = 0 }) => {
     return (
         <ResponsiveBar
-            data={inputData.slice((numberOfYears * -1))}
+            data={inputData ? inputData.slice((numberOfYears * -1)) : []}
             keys={inputKeys}
             indexBy="year"
 
