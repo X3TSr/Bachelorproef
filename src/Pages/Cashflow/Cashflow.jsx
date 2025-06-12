@@ -59,7 +59,7 @@ const Cashflow = () => {
                 <div className={`${style.cashFlowGrid}`}>
                     <div className={`${style.graphCard}`}>
                         <Card classN={`${style.graphCardMain}`} type='graphTop' content={`${thisMonthName} Net Result`} number={getMonthNet()}>
-                            <DailyNetChart />
+                            {getMonthAllTransactions() != 0 ? <DailyNetChart /> : <h2 className='flex jdc justifyMiddle alignCenter h100'>No transactions this month</h2>}
                         </Card>
                     </div>
 
@@ -69,6 +69,7 @@ const Cashflow = () => {
                                 return <Transaction key={index} transaction={transaction} />
                             })
                         }
+                        {getMonthAllTransactions().length == 0 && <h2 className='flex jdc justifyMiddle alignCenter h100'>No transactions this month</h2>}
                     </Card>
 
                     <div className={`${style.wrapper}`}>
