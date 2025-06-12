@@ -2,12 +2,14 @@ import React, { useRef, useState } from 'react'
 import style from './Signup.module.css'
 import ROUTES from '../../consts/ROUTES';
 import { useUserStore } from '../../Store/userStore';
-import { Link, Navigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 
 import Input from '../../Components/Input/Input';
 import Button from '../../Components/Button/Button';
 
 const Signup = () => {
+
+    const navigate = useNavigate();
 
     const signup = useUserStore((state) => state.signup);
     const isLoggedIn = useUserStore((state) => state.isLoggedIn)
@@ -28,6 +30,7 @@ const Signup = () => {
         e.preventDefault()
         try {
             await signup(email, password, firstName, lastName, displayName)
+            navigate('/login', { replace: true });
         } catch (err) {
             setError(err.message)
         }

@@ -1,7 +1,7 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "firebase/auth";
 import { create } from "zustand";
 import { auth, db } from "../firebase/firebase";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 
 export const useUserStore = create((set) => ({
     user: null,
@@ -41,10 +41,14 @@ export const useUserStore = create((set) => ({
                 lastName,
                 displayName,
                 firstSignin: true,
-                createdAt: new Date()
+                createdAt: serverTimestamp(),
+                updatedAt: serverTimestamp()
             })
 
-            set({ user: user, isLoggedIn: true })
+            await setDoc(doc(db, 'data', user.uid), {
+                owner: user.uid,
+                data: ''
+            })
         } catch (error) {
             console.error('Signup failed:', error)
             throw error
