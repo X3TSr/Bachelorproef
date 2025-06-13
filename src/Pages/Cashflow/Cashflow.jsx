@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import style from './Cashflow.module.css'
 
 import * as modules from '../../general-js/scripts';
@@ -8,9 +8,12 @@ import DailyNetChart from '../../Components/Graphs/DailyNetChart';
 import useDataFunctions from '../../hooks/useDataFunctions';
 import Transaction from './components/Transaction';
 import Button from '../../Components/Button/Button';
+import Overlay from '../../Components/Overlay/Overlay';
+import AddEntry from '../../Components/AddEntry/AddEntry';
 
 const Cashflow = () => {
 
+    // Import data functions
     const {
         sortTransactionsByDate,
         getCurrentDate,
@@ -20,14 +23,17 @@ const Cashflow = () => {
         getMonthAllTransactions
     } = useDataFunctions();
 
+    // Set useful variables to get month info
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const thisMonth = (getCurrentDate().month).toString().padStart(2, '0') + getCurrentDate().year;
     const formatedMonth = thisMonth.slice(0, 2)[0].replace('0', '') + thisMonth.slice(0, 2)[1];
     const thisMonthName = months[formatedMonth];
 
+    // Set transaction variables
     const transactions = sortTransactionsByDate(getMonthAllTransactions());
     const lastTenTransactions = modules.arrayModule.copy(transactions).splice(-10).reverse();
 
+    // Determin Health of business
     const getHealthScore = (totalIncome, totalExpenses) => {
         if (totalIncome == 0 && totalExpenses == 0) return 0
         if (totalIncome == 0 && totalExpenses > 0) return -2
@@ -51,9 +57,19 @@ const Cashflow = () => {
         if (healthScore == -3) return 'Very Bad'
     }
 
+
+    // Add cashflow handler
+    const [showAddOverlay, setShowAddOverlay] = useState(false);
+    const handleAddCashflow = () => {
+        setShowAddOverlay(true);
+    }
+
     return (
         <>
             <section className={`${style.sectionCashflow}`}>
+                {showAddOverlay && <Overlay overlayHandler={setShowAddOverlay}>
+                    <AddEntry onComplete={() => setShowAddOverlay(false)} />
+                </Overlay>}
                 <h1 style={{ textAlign: 'center' }} className='w100'>Cashflow</h1>
                 <h3 style={{ marginBottom: '3rem' }}>Here is your overview for <span className='colorPrimary'>{thisMonthName}</span></h3>
                 <div className={`${style.cashFlowGrid}`}>
@@ -73,7 +89,7 @@ const Cashflow = () => {
                     </Card>
 
                     <div className={`${style.wrapper}`}>
-                        <Button text='Add Cashflow' fontSize='h4' />
+                        <Button text='Add Cashflow' fontSize='h4' onclick={handleAddCashflow} />
                         <div className={`flex justifySpaceBetween`}>
                             <Card type='budgetTextG' content='Income' number={getMonthTotalIncome()} />
                             <Card type='budgetTextR' content='Expenses' number={getMonthTotalExpenses()} />
