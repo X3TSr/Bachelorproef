@@ -5,10 +5,10 @@ import Button from '../Button/Button';
 import Select from '../Select/Select';
 import Input from '../Input/Input';
 import Card from '../Card/Card';
-import { dbAddDoc, dbFillNewData } from '../../firebase/firebase';
+import { dbAddData } from '../../firebase/firebase';
 
 const AddEntry = ({
-    handleStageChange = () => { }
+    onComplete = () => { }
 }) => {
 
     const date = new Date;
@@ -38,21 +38,18 @@ const AddEntry = ({
     useEffect(() => {
         if (!check) return;
 
-        const checkType = () => {
-            if (createEntryType.toLowerCase() == 'income') return createEntryValue;
-            if (createEntryType.toLocaleLowerCase() == 'expense') return `-${createEntryValue}`
-        }
-
         const transactions = [
             {
-                "Free-format reference": `${createEntryLabel}`,
-                "Amount": `${checkType()}`,
-                "Date": `${createEntryDate}`
+                "label": `${createEntryLabel}`,
+                "value": `${createEntryValue}`,
+                "date": `${createEntryDate.split('-').reverse().join('')}`,
+                "type": `${createEntryType}`,
+                "tag": ``,
             }
         ]
 
-        dbFillNewData(transactions);
-        handleStageChange(3);
+        dbAddData(transactions);
+        onComplete();
     }, [check])
 
     useEffect(() => {
@@ -61,10 +58,10 @@ const AddEntry = ({
 
     return (
         <div className={`${style.container}`}>
-            <Select options={['Income', 'expense']} onchange={setCreateEntryType} />
-            <Input content={createEntryLabel} onchange={setCreateEntryLabel} type='text' />
-            <Input content={createEntryValue} onchange={setCreateEntryValue} type='number' />
-            <Input type='date' content={createEntryDate} onchange={setCreateEntryDate} />
+            <Select options={['Income', 'Expense']} onchange={setCreateEntryType} />
+            <Input content={createEntryLabel} onchange={setCreateEntryLabel} type='text' htmlFor='Transaction Name' />
+            <Input content={createEntryValue} onchange={setCreateEntryValue} type='number' htmlFor='Transaction Value' />
+            <Input type='date' content={createEntryDate} onchange={setCreateEntryDate} htmlFor='Transaction Date' />
             <Button type='primary' text='Add Entry' fontSize='h4' onclick={checkFields} />
 
             <Card classN={`${style.containerBackground}`} />
