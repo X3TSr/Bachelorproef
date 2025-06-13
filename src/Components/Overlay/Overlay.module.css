@@ -21,6 +21,8 @@
 
     color: var(--color-red);
     font-size: 3.6rem;
+
+    cursor: pointer;
 }
 
 .content{
