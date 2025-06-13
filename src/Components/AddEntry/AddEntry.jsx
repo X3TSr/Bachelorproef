@@ -18,7 +18,7 @@ const AddEntry = ({
     const [createEntryType, setCreateEntryType] = useState('income');
     const [createEntryLabel, setCreateEntryLabel] = useState('');
     const [createEntryValue, setCreateEntryValue] = useState(0);
-    const [createEntryDate, setCreateEntryDate] = useState(`${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`);
+    const [createEntryDate, setCreateEntryDate] = useState(`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`);
 
     const reformatDate = (date) => {
         if (date.split('-').length > 2) return date;
