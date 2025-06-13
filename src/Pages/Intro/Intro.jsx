@@ -4,7 +4,7 @@ import Papa from 'papaparse';
 
 import * as modules from '../../general-js/scripts'
 import useFetchUser from '../../hooks/useFetchUser';
-import { auth, db, dbAddDoc, dbFillNewData } from '../../firebase/firebase';
+import { auth, db, dbFillNewData } from '../../firebase/firebase';
 
 import Loading from '../../Components/Loading/Loading';
 import Button from '../../Components/Button/Button';
@@ -98,7 +98,7 @@ const Intro = () => {
                             and the date is when the entry occurred.
                         </p>
                         <div className={`${style.buttonContainer}`}>
-                            <AddEntry handleStageChange={setStage} />
+                            <AddEntry onComplete={() => setStage(3)} />
                         </div>
                     </>
                 )
