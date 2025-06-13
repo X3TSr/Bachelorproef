@@ -1,6 +1,6 @@
 import React from 'react'
 
-import * as modules from '../../../general-js/scripts'
+import * as modules from '../../general-js/scripts'
 
 const Transaction = ({ transaction }) => {
 
