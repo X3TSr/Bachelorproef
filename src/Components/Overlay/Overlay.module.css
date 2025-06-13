@@ -3,15 +3,14 @@
     position: absolute;
     inset: 0;
 
-    background-color: #0008;
+    background-color: #000B;
 
     --padding: 6;
     width: 100%;
     height: 100%;
     padding: calc(1vh*var(--padding)) calc(1vw*var(--padding));
-}
-.sectionOverlay > * {
-    opacity: 1;
+
+    backdrop-filter: blur(.25rem);
 }
 
 .closeBtn{
@@ -35,6 +34,4 @@
 
     width: 100%;
     height: 100%;
-
-    backdrop-filter: blur(1rem);
 }
