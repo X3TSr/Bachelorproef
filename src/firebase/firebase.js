@@ -25,35 +25,72 @@ export const db = getFirestore(app);
 
 
 // ==========================
+//     READING DOCUMENTS
+// ==========================
+
+// Get all docs
+export const dbReadDocs = async (collectionToLookFor) => {
+  const querySnapshot = await getDocs(collection(db, collectionToLookFor));
+  let output = {};
+  querySnapshot.forEach((doc) => {
+    const id = doc.id;
+    const data = doc.data();
+    output[id] = data;
+  });
+  return output;
+}
+
+// Get specific doc
+export const dbReadDoc = async (collection, document) => {
+  const docRef = doc(db, collection, document)
+  const docSnap = getDoc(docRef);
+  
+  if ((await docSnap).exists()) {
+    return (await docSnap).data();
+  }
+  else {
+    return null;
+  }
+}
+
+
+
+// ==========================
 //      ADDING DOCUMENTS
 // ==========================
 
-export const dbAddDoc = async (crypt='') => {
-  try {
-    const docRef = await setDoc(doc(db, "data", auth.currentUser.uid), {
-      data: crypt,
-      owner: auth.currentUser.uid
-    });
-  } catch (e) {
-    console.error("Error adding document: ", e);
+const createDataObject = async (transactions) => {
+  // Get the current data in the collection
+  const currentData = await dbReadDoc('data', auth.currentUser.uid);
+  
+  // Fill in the json depending on if data existed already or not
+  const json = {}
+  if (currentData.data == '') {
+    json.total = '0';
+    json.totalIncome = '0';
+    json.totalExpenses = '0';
+    json.transactions = [];
+    json.history = [];
   }
-}
-export const dbFillNewData = (transactions) => {
-  const json = {
-    "total": "0",
-    "totalIncome": "0",
-    "totalExpenses": "0",
-    "transactions": [],
-    "history": []
+  else {
+    // Get current data as a json
+    const oldDataStr = modules.encriptionModule.decompressFromBase64(currentData.data);
+    const oldData = modules.encriptionModule.stringToJSON(oldDataStr);
+    
+    json.total = oldData.total;
+    json.totalIncome = oldData.totalIncome;
+    json.totalExpenses = oldData.totalExpenses;
+    json.transactions = oldData.transactions;
+    json.history = [];
   }
   
   // Add all transactions
   transactions.map(transaction => {
     json.transactions.push({
-      "label": `${transaction['Free-format reference']}`,
-      "type": `${parseFloat(transaction['Amount']) > 0 ? 'income' : 'expense'}`,
-      "value": `${transaction['Amount'].replace('-', '').replace(',', '.')}`,
-      "date": `${transaction['Date'].replaceAll('/', '')}`,
+      "label": `${transaction['label']}`,
+      "type": `${transaction['type']}`,
+      "value": `${transaction['value']}`,
+      "date": `${transaction['date']}`,
       "tag": ``
     })
   })
@@ -78,7 +115,7 @@ export const dbFillNewData = (transactions) => {
   })
   
   // Calculate total income & expenses
-  json.transactions.map(transaction => {
+  transactions.map(transaction => {
     if (transaction.type == 'income') json.totalIncome = (parseFloat(json.totalIncome) + parseFloat(transaction.value)).toFixed(2);
     if (transaction.type == 'expense') json.totalExpenses = (parseFloat(json.totalExpenses) + parseFloat(transaction.value)).toFixed(2);
   })
@@ -93,15 +130,34 @@ export const dbFillNewData = (transactions) => {
       gain = 0;
       loss = 0;
       prevYear = transaction.date.slice(-4);
-    } else {
-      if (transaction.type == 'income') gain += parseFloat(transaction.value);
-      if (transaction.type == 'expense') loss -= parseFloat(transaction.value);
     }
+    if (transaction.type == 'income') gain += parseFloat(transaction.value);
+    if (transaction.type == 'expense') loss -= parseFloat(transaction.value);
   });
   json.history.push({ 'year': prevYear, 'gain': gain, 'loss': loss })
   
   // Calculate total net
   json.total = parseFloat((json.totalIncome) - (json.totalExpenses)).toFixed(2);
+  
+  return json;
+}
+
+// Add new document in the collection data
+export const dbAddDoc = async (crypt='') => {
+  try {
+    const docRef = await setDoc(doc(db, "data", auth.currentUser.uid), {
+      data: crypt,
+      owner: auth.currentUser.uid
+    });
+  } catch (e) {
+    console.error("Error adding document: ", e);
+  }
+}
+
+// Add new transaction to user's current data in the collection data
+export const dbAddData = async (transactions) => {
+  // Create a new data object with the transactions
+  const json = await createDataObject(transactions)
   
   // Base64 & upload to firestore
   const str = modules.encriptionModule.jsonToString(json);
@@ -109,34 +165,29 @@ export const dbFillNewData = (transactions) => {
   dbAddDoc(crypt);
 }
 
-
-
-// ==========================
-//     READING DOCUMENTS
-// ==========================
-
-// Get all docs
-export const dbReadDocs = async (collectionToLookFor) => {
-  const querySnapshot = await getDocs(collection(db, collectionToLookFor));
-  let output = {};
-  querySnapshot.forEach((doc) => {
-    const id = doc.id;
-    const data = doc.data();
-    output[id] = data;
-  });
-  return output;
-}
-// Get specific doc
-export const dbReadDoc = async (collection, document) => {
-  const docRef = doc(db, collection, document)
-  const docSnap = getDoc(docRef);
+// Create new data object from scratch for new users to add to their data in the collection data
+export const dbFillNewData = async (transactions) => {
+  // Reformat CSV from KBC to my field names
+  transactions.map(transaction => {
+    // Create new keys with old values
+    transaction['label'] = transaction['Free-format reference'];
+    transaction['type'] = parseFloat(transaction['Amount']) > 0 ? 'income' : 'expense';
+    transaction['value'] = transaction['Amount'].replace('-', '').replace(',', '.');
+    transaction['date'] = transaction['Date'].replaceAll('/', '');
+    
+    // Delete old keys to not have duplicates
+    delete transaction['Free-format reference'];
+    delete transaction['Amount'];
+    delete transaction['Date'];
+  })
   
-  if ((await docSnap).exists()) {
-    return (await docSnap).data();
-  }
-  else {
-    return null;
-  }
+  // Create a new data object with the new transactions
+  const json = await createDataObject(transactions);
+  
+  // Base64 & upload to firestore
+  const str = modules.encriptionModule.jsonToString(json);
+  const crypt = modules.encriptionModule.compressToBase64(str);
+  dbAddDoc(crypt);
 }
 
 
