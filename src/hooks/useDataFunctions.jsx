@@ -320,13 +320,12 @@ export default function useDataFunctions() {
     const getTaxToPay = () => {
         let finalTaxableIncome = getNetTaxableIncome() - getTaxFreeSum();
         let taxToPay = 0;
-
-        Array.from(brackets).forEach(bracket => {
+        Object.entries(brackets).forEach(bracket => {
             if (finalTaxableIncome <= 0) return
-            finalTaxableIncome >= bracket.limit ?
-                taxToPay += bracket.limit * bracket.rate :
-                taxToPay += finalTaxableIncome * bracket.rate;
-            finalTaxableIncome -= bracket.limit;
+            finalTaxableIncome >= bracket[1].limit ?
+                taxToPay += bracket[1].limit * bracket[1].rate :
+                taxToPay += finalTaxableIncome * bracket[1].rate;
+            finalTaxableIncome -= bracket[1].limit;
         });
         return parseFloat(taxToPay).toFixed(2);
     }
