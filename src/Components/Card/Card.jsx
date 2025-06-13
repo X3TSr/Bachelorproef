@@ -15,6 +15,7 @@ const Card = ({
     score = 0,
     children,
     onchange = () => { },
+    onclick = () => { },
 }) => {
 
     const checkType = () => {
@@ -98,7 +99,7 @@ const Card = ({
                     <div className={`${style.transactions}`}>
                         <div className={`flex alignRight justifySpaceBetween`} style={{ marginBottom: '2rem' }}>
                             <h2 className={`${style.cardTitle}`}>Transactions</h2>
-                            <p style={{ textDecoration: 'underline', cursor: 'pointer', opacity: '.6' }}>All transactions</p>
+                            <p style={{ textDecoration: 'underline', cursor: 'pointer', opacity: '.6' }} onClick={() => onclick()}>All transactions</p>
                         </div>
                         <div>
                             {children}

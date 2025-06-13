@@ -6,10 +6,11 @@ import * as modules from '../../general-js/scripts';
 import Card from '../../Components/Card/Card';
 import DailyNetChart from '../../Components/Graphs/DailyNetChart';
 import useDataFunctions from '../../hooks/useDataFunctions';
-import Transaction from './components/Transaction';
+import Transaction from '../../Components/Transaction/Transaction';
 import Button from '../../Components/Button/Button';
 import Overlay from '../../Components/Overlay/Overlay';
 import AddEntry from '../../Components/AddEntry/AddEntry';
+import AllTransactions from '../../Components/AllTransactions/AllTransactions';
 
 const Cashflow = () => {
 
@@ -63,12 +64,19 @@ const Cashflow = () => {
     const handleAddCashflow = () => {
         setShowAddOverlay(true);
     }
+    const [showTransactionOverlay, setShowTransactionOverlay] = useState(false);
+    const handleSeeAllTransactions = () => {
+        setShowTransactionOverlay(true);
+    }
 
     return (
         <>
             <section className={`${style.sectionCashflow}`}>
                 {showAddOverlay && <Overlay overlayHandler={setShowAddOverlay}>
                     <AddEntry onComplete={() => setShowAddOverlay(false)} />
+                </Overlay>}
+                {showTransactionOverlay && <Overlay overlayHandler={setShowTransactionOverlay}>
+                    <AllTransactions />
                 </Overlay>}
                 <h1 style={{ textAlign: 'center' }} className='w100'>Cashflow</h1>
                 <h3 style={{ marginBottom: '3rem' }}>Here is your overview for <span className='colorPrimary'>{thisMonthName}</span></h3>
@@ -79,7 +87,7 @@ const Cashflow = () => {
                         </Card>
                     </div>
 
-                    <Card type='transactions'>
+                    <Card type='transactions' onclick={handleSeeAllTransactions}>
                         {
                             lastTenTransactions.map((transaction, index) => {
                                 return <Transaction key={index} transaction={transaction} />

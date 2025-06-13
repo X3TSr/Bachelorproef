@@ -1,0 +1,46 @@
+.sectionAllTransactions{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    height: 100%;
+    min-height: unset;
+}
+
+.transactionsContainer{
+    z-index: 1;
+    position: relative;
+
+    border: 1px solid white;
+    border-radius: var(--general-border-radius);
+
+    width: 100%;
+    height: 40rem;
+}
+.transactionsContainer::after{
+    content: '';
+
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+
+    background: 
+    linear-gradient(black, transparent 10%),
+    linear-gradient(0, black, transparent 20%);
+    border-radius: inherit;
+
+    width: 100%;
+    height: 100%;
+}
+.scrollBox{
+    overflow-y: scroll;
+
+    height: 100%;
+    padding: 2rem 4rem;
+}
+
+.containerBackground{
+    z-index: -10;
+    position: absolute;
+    inset: 0;
+}
