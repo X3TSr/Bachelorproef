@@ -219,6 +219,167 @@ export default function useDataFunctions() {
 
 
     // ========================
+    //          BY TAG
+    // ========================
+    const getValue = (transaction, useAbsolute) =>
+        useAbsolute ? Math.abs(parseFloat(transaction.value)) : parseFloat(transaction.value);
+
+    // Percent by tag (all time)
+    const getPercentByTagAllTime = (tag, useAbsolute = true) => {
+        if (!data || !data.transactions?.length) return (0).toFixed(2);
+
+        let tagTotal = 0;
+        let total = 0;
+
+        data.transactions.forEach((transaction) => {
+            const value = getValue(transaction, useAbsolute);
+
+            if (transaction.tag == tag) tagTotal += value;
+            total += value;
+        });
+
+        return ((tagTotal / total) * 100).toFixed(2);
+    };
+    const getTransactionPercentByTagAllTime = (tag, transaction, useAbsolute = true) => {
+        if (!data || !data.transactions?.length) return (0).toFixed(2);
+
+        let tagTotal = 0;
+        data.transactions.forEach(t => {
+            if (t.tag == tag) tagTotal += getValue(t, useAbsolute);
+        });
+
+        const transValue = getValue(transaction, useAbsolute);
+        if (tagTotal == 0) return (0).toFixed(2);
+
+        return ((transValue / tagTotal) * 100).toFixed(2);
+    };
+
+
+    // Percent by tag this year
+    const getPercentByTagYear = (tag, year = getCurrentDate().year, useAbsolute = true) => {
+        if (!data || !data.transactions?.length) return (0).toFixed(2);
+
+        let tagTotal = 0;
+        let total = 0;
+
+        data.transactions.forEach((transaction) => {
+            const value = getValue(transaction, useAbsolute);
+
+            if (getTransactionDate(transaction).year == year) {
+                if (transaction.tag == tag) tagTotal += value;
+                total += value;
+            }
+        });
+
+        return ((tagTotal / total) * 100).toFixed(2);
+    };
+    const getTransactionPercentByTagYear = (tag, transaction, year = getCurrentDate().year, useAbsolute = true) => {
+        if (!data || !data.transactions?.length) return (0).toFixed(2);
+
+        let tagTotal = 0;
+        data.transactions.forEach(t => {
+            if (t.tag == tag && getTransactionDate(transaction).year == year) tagTotal += getValue(t, useAbsolute);
+        });
+
+        const transValue = getValue(transaction, useAbsolute);
+        if (tagTotal == 0) return (0).toFixed(2);
+
+        return ((transValue / tagTotal) * 100).toFixed(2);
+    };
+
+
+    // Percent by tag this month
+    const getPercentByTagMonth = (tag, monthYearValue = getCurrentDate().full.slice(2), useAbsolute = true) => {
+        if (!data || !data.transactions?.length) return (0).toFixed(2);
+
+        let tagTotal = 0;
+        let total = 0;
+
+        data.transactions.forEach((transaction) => {
+            const value = getValue(transaction, useAbsolute);
+
+            if (getTransactionDate(transaction).year == monthYearValue.slice(-4) && getTransactionDate(transaction).month == monthYearValue.slice(0, 2)) {
+                total += value;
+                if (transaction.tag == tag) {
+                    tagTotal += value;
+                }
+            }
+        });
+
+        return ((tagTotal / total) * 100).toFixed(2);
+    };
+    const getTransactionPercentByTagMonth = (tag, transaction, monthYearValue = getCurrentDate().full.slice(2), useAbsolute = true) => {
+        if (!data || !data.transactions?.length) return (0).toFixed(2);
+
+        let tagTotal = 0;
+        data.transactions.forEach(t => {
+            const transDate = getTransactionDate(t);
+            if (
+                t.tag == tag &&
+                transDate.year == monthYearValue.slice(-4) &&
+                transDate.month == monthYearValue.slice(0, 2)
+            ) {
+                tagTotal += getValue(t, useAbsolute);
+            }
+        });
+
+        const transValue = getValue(transaction, useAbsolute);
+        if (tagTotal == 0) return (0).toFixed(2);
+
+        return ((transValue / tagTotal) * 100).toFixed(2);
+    };
+
+
+    // Percent by tag this day
+    const getPercentByTagDay = (tag, dayMonthYearValue = getCurrentDate().full, useAbsolute = true) => {
+        if (!data || !data.transactions?.length) return (0).toFixed(2);
+
+        let tagTotal = 0;
+        let total = 0;
+
+        data.transactions.forEach((transaction) => {
+            const value = getValue(transaction, useAbsolute);
+            const tDate = getTransactionDate(transaction);
+            const isSameDay =
+                tDate.year == dayMonthYearValue.slice(-4) &&
+                tDate.month == dayMonthYearValue.slice(2, 4) &&
+                tDate.day == dayMonthYearValue.slice(0, 2);
+
+            if (transaction.tag == tag && isSameDay) {
+                tagTotal += value;
+                total += value;
+            }
+
+        });
+
+        return ((tagTotal / total) * 100).toFixed(2);
+    };
+    const getTransactionPercentByTagDay = (tag, transaction, dayMonthYearValue = getCurrentDate().full, useAbsolute = true) => {
+        if (!data || !data.transactions?.length) return (0).toFixed(2);
+
+        const tDate = getTransactionDate(transaction);
+        const isSameDay =
+            tDate.year == dayMonthYearValue.slice(-4) &&
+            tDate.month == dayMonthYearValue.slice(2, 4) &&
+            tDate.day == dayMonthYearValue.slice(0, 2);
+        let tagTotal = 0;
+
+        data.transactions.forEach(t => {
+            if (t.tag == tag && isSameDay) {
+                tagTotal += getValue(t, useAbsolute);
+            }
+        });
+
+        const transValue = getValue(transaction, useAbsolute);
+        if (tagTotal == 0) return (0).toFixed(2);
+
+        return ((transValue / tagTotal) * 100).toFixed(2);
+    };
+
+
+
+
+    // ========================
     //          ALL TIME
     // ========================
     const getAllTimeTotalIncome = () => {
@@ -360,6 +521,15 @@ export default function useDataFunctions() {
         getAllTimeHighestExpense,
         getAllTimeNet,
         getAllTimeTransactions,
+
+        getPercentByTagAllTime,
+        getTransactionPercentByTagAllTime,
+        getPercentByTagYear,
+        getTransactionPercentByTagYear,
+        getPercentByTagMonth,
+        getTransactionPercentByTagMonth,
+        getPercentByTagDay,
+        getTransactionPercentByTagDay,
 
         getGrossTaxableIncome,
         getProfessionalCosts,
