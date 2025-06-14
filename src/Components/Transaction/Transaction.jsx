@@ -1,8 +1,16 @@
-import React from 'react'
+import React, { useState } from 'react'
+import style from './Transaction.module.css';
 
 import * as modules from '../../general-js/scripts'
+import useDataFunctions from '../../hooks/useDataFunctions';
 
-const Transaction = ({ transaction }) => {
+const Transaction = ({
+    transaction,
+    hasDate = false,
+    onclick = () => { },
+}) => {
+
+    const { getTransactionDate } = useDataFunctions();
 
     const getColor = () => {
         return transaction.type == 'income' ? 'var(--color-green)' : 'var(--color-red)';
@@ -28,7 +36,7 @@ const Transaction = ({ transaction }) => {
     }
 
     return (
-        <div className={`flex justifySpaceBetween alignCenter`} style={{ padding: '1rem' }}>
+        <div className={`flex justifySpaceBetween alignCenter ${style.transaction}`} style={{ padding: '1rem' }} onClick={() => onclick()}>
             <div className={`flex alignCenter`} style={{ gap: '1rem', width: '80%' }}>
                 <div style={{
                     width: `${tagSize}`
@@ -45,7 +53,10 @@ const Transaction = ({ transaction }) => {
                     {transaction.label ? modules.textCasingModule.toSentenceCase(transaction.label) : 'Unknown Transaction'}
                 </p>
             </div>
-            <p style={{ color: `${getColor()}` }}>{transaction.type == 'income' ? transaction.value : `${transaction.value}`} €</p>
+            <div>
+                {hasDate && <p>{getTransactionDate(transaction).day}/{getTransactionDate(transaction).month}/{getTransactionDate(transaction).year}</p>}
+                <p style={{ color: `${getColor()}` }}>{transaction.type == 'income' ? transaction.value : `${transaction.value}`} €</p>
+            </div>
         </div>
     );
 };

@@ -1,0 +1,10 @@
+.transaction{
+    border-radius: var(--general-border-radius);
+    text-shadow: 0 0 .5rem #000A;
+
+    cursor: pointer;
+    transition: all .125s;
+}
+.transaction:hover{
+    background-color: var(--color-primary);
+}

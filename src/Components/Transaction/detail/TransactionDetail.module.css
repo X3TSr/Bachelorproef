@@ -1,0 +1,27 @@
+.container{
+    padding: 4rem 6rem;
+}
+
+.backArrow{
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+
+    color: var(--color-red);
+    font-size: 3rem;
+    font-weight: 900;
+
+    cursor: pointer;
+}
+
+.tag{
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+
+    margin-top: 2rem;
+}
+
+.info{
+    margin-top: 2rem;
+}

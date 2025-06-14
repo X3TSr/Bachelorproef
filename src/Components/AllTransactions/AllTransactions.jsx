@@ -7,6 +7,7 @@ import Card from '../Card/Card';
 import Transaction from '../Transaction/Transaction';
 import Input from '../Input/Input';
 import Select from '../Select/Select';
+import TransactionDetail from '../Transaction/detail/TransactionDetail';
 
 const AllTransactions = () => {
     const {
@@ -16,9 +17,20 @@ const AllTransactions = () => {
 
     const allTransactions = getAllTimeTransactions();
 
+    const [hideAll, setHideAll] = useState(false);
+    const [showDetail, setShowDetail] = useState(null);
+
     const [searchValue, setSearchValue] = useState('');
     const [sortBy, setSortBy] = useState('date');
     const [sortDirection, setSortDirection] = useState('descending');
+
+    const reformatDate = (unformatedDate) => {
+        const day = parseInt(unformatedDate.slice(0, 2));
+        const month = parseInt(unformatedDate.slice(2, 4)) - 1;
+        const year = parseInt(unformatedDate.slice(-4));
+        const d = new Date(year, month, day);
+        return d;
+    }
 
     const filteredTransactions = useMemo(() => {
         let filtered = allTransactions?.filter((t) =>
@@ -34,8 +46,8 @@ const AllTransactions = () => {
                 bValue = b.type == 'income' ? parseFloat(b.value) : parseFloat(`-${b.value}`);
             } else {
                 // Default: sort by date (assuming descending is newest first)
-                aValue = a.date || 0;
-                bValue = b.date || 0;
+                aValue = reformatDate(a.date) || 0;
+                bValue = reformatDate(b.date) || 0;
             }
 
             if (aValue < bValue) return sortDirection.toLowerCase() == 'ascending' ? -1 : 1;
@@ -61,17 +73,22 @@ const AllTransactions = () => {
             </span>
 
             <div className={`${style.transactionsContainer}`}>
-                <div className={`${style.scrollBox}`}>
-                    {filteredTransactions.length > 0 ? (
-                        filteredTransactions.map((transaction, index) => (
-                            <Transaction key={index} transaction={transaction} />
-                        ))
-                    ) : (
-                        <h2 className='flex jdc justifyMiddle alignCenter h100'>
-                            No transactions match your search
-                        </h2>
-                    )}
-                </div>
+                {!hideAll &&
+                    <div className={`${style.scrollBox}`}>
+                        {filteredTransactions.length > 0 ? (
+                            filteredTransactions.map((transaction, index) => (
+                                <Transaction key={index} transaction={transaction} hasDate onclick={() => { setHideAll(true); setShowDetail(transaction) }} />
+                            ))
+                        ) : (
+                            <h2 className='flex jdc justifyMiddle alignCenter h100'>
+                                No transactions match your search
+                            </h2>
+                        )}
+                    </div>
+                }
+                {showDetail &&
+                    <TransactionDetail transaction={showDetail} backFn={() => { setHideAll(false); setShowDetail(null) }} />
+                }
             </div>
 
             <Card classN={`${style.containerBackground}`} />
