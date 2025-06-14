@@ -46,9 +46,9 @@ export default function useDataFunctions() {
     }
 
     const getTransactionDate = (transaction) => {
-        const day = transaction.date.split('').splice(0, 2).join('');
-        const month = transaction.date.split('').splice(2, 2).join('');
-        const year = transaction.date.split('').splice(-4).join('');
+        const day = transaction.date?.split('').splice(0, 2).join('');
+        const month = transaction.date?.split('').splice(2, 2).join('');
+        const year = transaction.date?.split('').splice(-4).join('');
         const dateObj = { day, month, year };
 
         return dateObj;
