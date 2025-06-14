@@ -68,13 +68,8 @@ const Future = () => {
     return (
         <section className={`${style.sectionFuture}`}>
             <h1 style={{ textAlign: 'center' }} className='w100'>Future</h1>
-            <h3 style={{ marginBottom: '3rem' }}>Here is your overview for <span className='colorPrimary'>{nextMonthName}</span></h3>
+            <h3 style={{ marginBottom: '3rem' }}>Here is your projection for <span className='colorPrimary'>{nextMonthName}</span></h3>
             <div className={`${style.futureGrid}`}>
-
-                <div style={{ height: '32rem' }}>
-                    <Card />
-                </div>
-
                 <div className={`${style.sliders}`}>
                     <Card type='sliderProjection' title={`Incomes ${sliderIncomeValue}%`} content={sliderIncomeValue} onchange={setSliderIncomeValue} />
                     <Card type='sliderProjection' title={`Expenses ${sliderExpensesValue}%`} content={sliderExpensesValue} onchange={setSliderExpensesValue} />
@@ -82,12 +77,12 @@ const Future = () => {
 
                 <div className={`${style.wrapper}`}>
                     <div className={`flex justifySpaceBetween`}>
-                        <Card type='budgetTextG' content='Income' number={projectedMonthIncome.toFixed(2)} />
-                        <Card type='budgetTextR' content='Expenses' number={projectedMonthExpenses.toFixed(2)} />
+                        <Card classN='flex alignCenter justifyBottom' type='budgetTextG' content='Income' number={projectedMonthIncome.toFixed(2)} />
+                        <Card classN='flex alignCenter justifyBottom' type='budgetTextR' content='Expenses' number={projectedMonthExpenses.toFixed(2)} />
                     </div>
                 </div>
 
-                <Card type='healthMeter' content={getHealthLabel(getHealthScore(projectedMonthIncome, projectedMonthExpenses))} score={getHealthScore(projectedMonthIncome, projectedMonthExpenses)} />
+                <Card classN={`span2 ${style.healthMeter}`} type='healthMeter' content={getHealthLabel(getHealthScore(projectedMonthIncome, projectedMonthExpenses))} score={getHealthScore(projectedMonthIncome, projectedMonthExpenses)} />
 
             </div>
         </section>
