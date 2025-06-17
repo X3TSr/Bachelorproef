@@ -73,6 +73,8 @@
 
     background: linear-gradient(90deg, var(--color-red) 65%, var(--color-orange) 80%, var(--color-green) 90%);
     background-attachment: fixed;
+    background-size: 180%;
+    background-position: right;
     border-radius: var(--general-border-radius);
     
     height: 90%;

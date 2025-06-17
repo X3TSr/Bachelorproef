@@ -1,6 +1,5 @@
 .sectionDashboard{
-    display: flex;
-    flex-direction: column;
+    display: grid;
     gap: 6rem;
 
     padding: 2rem 24rem;
@@ -21,4 +20,16 @@
     gap: var(--grid-gap);
     
     padding-bottom: 3rem;
+}
+
+
+
+/* MOBILE */
+.mobileSectionDashboard{
+    padding: 2rem var(--general-padding-site);
+    padding-bottom: var(--nav-mobile-height);
+}
+
+.mobileCardContainer{
+    grid-template-columns: repeat(auto-fill, minmax(40vw, 1fr));
 }

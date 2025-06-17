@@ -8,12 +8,15 @@ import Header from './Components/Header/Header'
 import Router from './Router/Router'
 
 import Background from './Components/Background/Background'
+import { useIsMobile } from './hooks/useIsMobile'
+import MobileHeader from './Components/Header/MobileHeader'
 
 function App() {
 
   const isLoggedIn = useUserStore((state) => state.isLoggedIn);
   const setUser = useUserStore((state) => state.setUser)
   const logout = useUserStore((state) => state.logout)
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
@@ -29,7 +32,7 @@ function App() {
 
   return (
     <>
-      {isLoggedIn ? <Header /> : null}
+      {isLoggedIn ? (isMobile ? <MobileHeader /> : <Header />) : null}
       <Router />
       {isLoggedIn ? <Background /> : null}
     </>

@@ -78,3 +78,35 @@
   from { background-position: 0 0; }
   to { background-position: 100% 0; }
 }
+
+
+
+/* MOBILE */
+.mobileSectionLogin::after{
+    content: '';
+
+    opacity: .25;
+
+    z-index: -2;
+    position: fixed;
+    inset: 0;
+
+    background-image: url('/images/pattern.svg');
+    background-size: 5%;
+
+    width: 100%;
+    height: 100%;
+
+    transform: rotate(60deg) scale(2.5);
+
+    animation: animatedBackground 30s linear infinite;
+}
+
+.mobileContainerLogin{
+    width: 100%;
+    padding: unset;
+}
+.mobileCard{
+    z-index: -1;
+    position: absolute;
+}

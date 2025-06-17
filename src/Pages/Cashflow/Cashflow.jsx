@@ -11,6 +11,7 @@ import Button from '../../Components/Button/Button';
 import Overlay from '../../Components/Overlay/Overlay';
 import AddEntry from '../../Components/AddEntry/AddEntry';
 import AllTransactions from '../../Components/AllTransactions/AllTransactions';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 const Cashflow = () => {
 
@@ -24,6 +25,8 @@ const Cashflow = () => {
         getMonthAllTransactions
     } = useDataFunctions();
 
+    const isMobile = useIsMobile();
+
     // Set useful variables to get month info
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const thisMonth = (getCurrentDate().month).toString().padStart(2, '0') + getCurrentDate().year;
@@ -32,7 +35,7 @@ const Cashflow = () => {
 
     // Set transaction variables
     const transactions = sortTransactionsByDate(getMonthAllTransactions());
-    const lastTenTransactions = modules.arrayModule.copy(transactions).splice(-10).reverse();
+    const lastTenTransactions = modules.arrayModule.copy(transactions).splice(isMobile ? -3 : -10).reverse();
 
     // Determin Health of business
     const getHealthScore = (totalIncome, totalExpenses) => {
@@ -80,14 +83,14 @@ const Cashflow = () => {
                 </Overlay>}
                 <h1 style={{ textAlign: 'center' }} className='w100'>Cashflow</h1>
                 <h3 style={{ marginBottom: '3rem' }}>Here is your overview for <span className='colorPrimary'>{thisMonthName}</span></h3>
-                <div className={`${style.cashFlowGrid}`}>
+                <div className={`${style.cashFlowGrid} ${isMobile ? style.mobileCashflowGrid : ''}`}>
                     <div className={`${style.graphCard}`}>
                         <Card classN={`${style.graphCardMain}`} type='graphTop' content={`${thisMonthName} Net Result`} number={getMonthNet()}>
                             {getMonthAllTransactions() != 0 ? <DailyNetChart /> : <h2 className='flex jdc justifyMiddle alignCenter h100'>No transactions this month</h2>}
                         </Card>
                     </div>
 
-                    <Card type='transactions' onclick={handleSeeAllTransactions}>
+                    <Card type='transactions' onclick={handleSeeAllTransactions} classN={`${style.mobileTransactions}`}>
                         {
                             lastTenTransactions.map((transaction, index) => {
                                 return <Transaction key={index} transaction={transaction} />
@@ -104,7 +107,7 @@ const Cashflow = () => {
                         </div>
                     </div>
 
-                    <Card type='healthMeter' content={getHealthLabel(getHealthScore(getMonthTotalIncome(), getMonthTotalExpenses()))} score={getHealthScore(getMonthTotalIncome(), getMonthTotalExpenses())} />
+                    <Card type='healthMeter' classN={`${style.mobileHealthBar}`} content={getHealthLabel(getHealthScore(getMonthTotalIncome(), getMonthTotalExpenses()))} score={getHealthScore(getMonthTotalIncome(), getMonthTotalExpenses())} />
                 </div>
             </section>
         </>

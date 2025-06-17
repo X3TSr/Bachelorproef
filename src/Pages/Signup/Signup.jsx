@@ -6,6 +6,8 @@ import { Link, Navigate, useNavigate } from 'react-router-dom';
 
 import Input from '../../Components/Input/Input';
 import Button from '../../Components/Button/Button';
+import Card from '../../Components/Card/Card';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 const Signup = () => {
 
@@ -20,6 +22,7 @@ const Signup = () => {
     const [password, setPassword] = useState('')
     const [error, setError] = useState('')
     const signinBtn = useRef();
+    const isMobile = useIsMobile();
 
 
     if (isLoggedIn) {
@@ -44,11 +47,13 @@ const Signup = () => {
 
 
     return (
-        <section className={`${style.sectionLogin}`}>
-            <div className={`${style.containerImage}`}>
-                <div className={`${style.loginVector}`}></div>
-            </div>
-            <div className={`${style.containerLogin}`}>
+        <section className={`${style.sectionLogin} ${isMobile ? style.mobileSectionLogin : ''}`}>
+            {!isMobile &&
+                <div className={`${style.containerImage}`}>
+                    <div className={`${style.loginVector}`}></div>
+                </div>
+            }
+            <div className={`${style.containerLogin}  ${isMobile ? style.mobileContainerLogin : ''}`}>
                 <img src="/logo/logo-login.svg" alt="Logo" />
                 {error && <p style={{ color: 'var(--color-red)' }}>{error}</p>}
                 <Input type='text' htmlFor='firstName' onchange={setFirstName} content={firstName} onKeyDown={checkEnter} />
@@ -58,6 +63,7 @@ const Signup = () => {
                 <Input type='password' htmlFor='password' onchange={setPassword} content={password} onKeyDown={checkEnter} />
                 <Button text='Maak account' onclick={handleSignup} classN={`${style.cta_btn}`} ref={signinBtn} />
                 <p>Already have an account? Login <Link to={ROUTES.login} className={`${style.switch_link}`}>here</Link></p>
+                <Card classN={`${style.mobileCard}`} />
             </div>
         </section>
     );

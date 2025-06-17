@@ -8,9 +8,7 @@
 
 .futureGrid{
     display: grid;
-    grid-template-columns: repeat(2, minmax(1fr, 40vw));
-    grid-auto-rows: min-content;
-    justify-items: center;
+    grid-template-columns: repeat(auto-fill, minmax(40vw, 1fr));
     gap: 4vw;
 
     width: 100%;

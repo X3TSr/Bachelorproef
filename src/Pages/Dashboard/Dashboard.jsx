@@ -13,6 +13,7 @@ import Loading from '../../Components/Loading/Loading';
 import useDataFunctions from '../../hooks/useDataFunctions';
 import Intro from '../Intro/Intro';
 import YearHistoryChart from '../../Components/Graphs/YearHistoryChart';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 const Dashboard = () => {
 
@@ -27,6 +28,7 @@ const Dashboard = () => {
         getYearTotalExpenses
     } = useDataFunctions();
 
+    const isMobile = useIsMobile();
 
     if (!data) return;
     const userData = data.history;
@@ -34,6 +36,7 @@ const Dashboard = () => {
         'gain',
         'loss',
     ];
+
 
 
     if (loading || !data) return <Loading />
@@ -45,19 +48,19 @@ const Dashboard = () => {
 
     if (data) return (
         <>
-            <section className={`${style.sectionDashboard}`}>
+            <section className={`${style.sectionDashboard} ${isMobile ? style.mobileSectionDashboard : ''}`} >
                 <div className={`${style.title}`}>
                     <h1 style={{ marginBottom: '2rem' }}>Dashboard</h1>
                     <h3>Welcome back <span className='colorPrimary'>{user.firstName}</span></h3>
                     <h3>Here is your <span className='colorPrimary'>{getCurrentDate().year}</span> overview</h3>
                 </div>
                 <div className={`${style.content}`}>
-                    <div className={`${style.cardContainer}`}>
+                    <div className={`${style.cardContainer} ${isMobile ? style.mobileCardContainer : ''}`}>
                         <Card type='budgetText' content='Total' number={getYearNet()} />
                         <Card type='budgetTextG' content='Income' number={getYearTotalIncome()} />
                         <Card type='budgetTextR' content='Expenses' number={getYearTotalExpenses()} />
-                        <Card type='graphBottom' classN='span2' hideTitle>
-                            <YearHistoryChart inputData={userData} inputKeys={keys} numberOfYears={6} />
+                        <Card type='graphBottom' classN={`${isMobile ? '' : 'span2'}`} hideTitle>
+                            <YearHistoryChart inputData={userData} inputKeys={keys} numberOfYears={isMobile ? 3 : 6} />
                         </Card>
                         <Card
                             type='percent'

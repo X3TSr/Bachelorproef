@@ -8,6 +8,7 @@
 :root{
     --general-border-radius: 0.8rem;
     --general-padding-site: 6rem;
+    --nav-mobile-height: 10vh;
 }
 
 ::-webkit-scrollbar{

@@ -4,9 +4,8 @@ import style from './Future.module.css'
 import * as modules from '../../general-js/scripts';
 
 import Card from '../../Components/Card/Card';
-import DailyNetChart from '../../Components/Graphs/DailyNetChart';
 import useDataFunctions from '../../hooks/useDataFunctions';
-import Button from '../../Components/Button/Button';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 const Future = () => {
 
@@ -19,6 +18,8 @@ const Future = () => {
         getMonthTotalIncome,
         getMonthTotalExpenses,
     } = useDataFunctions();
+
+    const isMobile = useIsMobile();
 
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const nextMonth = (parseInt(getCurrentDate().month) + 1).toString().padStart(2, '0') + getCurrentDate().year;
@@ -68,7 +69,7 @@ const Future = () => {
     return (
         <section className={`${style.sectionFuture}`}>
             <h1 style={{ textAlign: 'center' }} className='w100'>Future</h1>
-            <h3 style={{ marginBottom: '3rem' }}>Here is your projection for <span className='colorPrimary'>{nextMonthName}</span></h3>
+            <h3 style={{ marginBottom: '3rem', textAlign: 'center' }}>Here is your projection for <span className='colorPrimary'>{nextMonthName}</span></h3>
             <div className={`${style.futureGrid}`}>
                 <div className={`${style.sliders}`}>
                     <Card type='sliderProjection' title={`Incomes ${sliderIncomeValue}%`} content={sliderIncomeValue} onchange={setSliderIncomeValue} />
@@ -82,7 +83,7 @@ const Future = () => {
                     </div>
                 </div>
 
-                <Card classN={`span2 ${style.healthMeter}`} type='healthMeter' content={getHealthLabel(getHealthScore(projectedMonthIncome, projectedMonthExpenses))} score={getHealthScore(projectedMonthIncome, projectedMonthExpenses)} />
+                <Card classN={`${style.healthMeter} ${isMobile ? '' : 'span2'}`} type='healthMeter' content={getHealthLabel(getHealthScore(projectedMonthIncome, projectedMonthExpenses))} score={getHealthScore(projectedMonthIncome, projectedMonthExpenses)} />
 
             </div>
         </section>
