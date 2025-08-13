@@ -7,8 +7,11 @@
     --color-orange: #cc9352;
     --color-red: #F87171;
 
-    --color-primary: #8598A4;
-    --color-secondary: #161616;
+    /* --color-primary: #8598A4; */
+    --color-primary: #82b6d7;
+    /* --color-secondary: #161616; */
+    --color-secondary: #8cbc7b;
+    /* --color-tertiary: #f0f0f0; */
     --color-tertiary: #f0f0f0;
 
     --color-primary-100: color-mix(in srgb, var(--color-primary) 20%, black);

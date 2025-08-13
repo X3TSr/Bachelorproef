@@ -5,7 +5,7 @@ const Background = () => {
     return (
         <div className={`${style.parent}`}>
             <div className={`${style.container}`}>
-                <div className={`${style.circle}`}></div>
+                {/* <div className={`${style.circle}`}></div> */}
                 <div className={`${style.card}`}>
                     <div className={`${style.cardBg}`}></div >
                 </div>

@@ -109,4 +109,6 @@
 .mobileCard{
     z-index: -1;
     position: absolute;
+
+    width: 200vw !important;
 }

@@ -10,7 +10,7 @@
     backdrop-filter: blur(1rem);
 }
 .card:has(div + .light){
-    color: var(--color-black);
+    color: var(--color-primary-200);
 }
 .card:has(div + .light) h4{
     opacity: .3;
@@ -27,12 +27,12 @@
     height: 100%;
 }
 .dark{
-    background-color: var(--color-black);
+    background-color: var(--color-primary-100);
 }
 .light{
     opacity: .6;
     
-    background-color: var(--color-white);
+    background-color: var(--color-primary-900);
 }
 
 
