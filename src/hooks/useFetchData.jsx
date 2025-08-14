@@ -1,29 +1,32 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
-import * as modules from '../general-js/scripts'
-import { auth, db, dbAddDoc, dbReadDoc, dbReadDocs } from '../firebase/firebase';
+import * as modules from '../general-js/scripts';
+import { auth, dbReadDoc } from '../firebase/firebase';
 import useFetchUser from "./useFetchUser";
 
-
 export default function useFetchData() {
-
     const { user } = useFetchUser();
 
     const [dbCryptData, setDbCryptData] = useState();
     const [data, setData] = useState();
 
-    useEffect(() => {
+    const fetchData = useCallback(async () => {
         if (!user) return;
 
-        dbReadDoc('data', auth.currentUser.uid)
-            .then(res => {
-                setDbCryptData(res);
-            })
-            .catch(error => {
-                console.error(error)
-            });
-    }, [user])
+        try {
+            const res = await dbReadDoc('data', auth.currentUser.uid);
+            setDbCryptData(res);
+        } catch (error) {
+            console.error(error);
+        }
+    }, [user]);
 
+    // Fetch when user changes
+    useEffect(() => {
+        fetchData();
+    }, [fetchData]);
+
+    // Decrypt and set usable data
     useEffect(() => {
         if (!dbCryptData) return;
 
@@ -31,7 +34,7 @@ export default function useFetchData() {
         const jsonData = modules.encriptionModule.stringToJSON(decr);
 
         setData(jsonData);
-    }, [dbCryptData])
+    }, [dbCryptData]);
 
-    return { dbCryptData, data }
+    return { dbCryptData, data, refetch: fetchData };
 }

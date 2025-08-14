@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { collection, doc, getDoc, getDocs, getFirestore, setDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, getFirestore, setDoc, updateDoc } from "firebase/firestore";
 import { getAnalytics } from "firebase/analytics";
 import { browserLocalPersistence, getAuth, setPersistence } from "firebase/auth";
 
@@ -189,6 +189,43 @@ export const dbFillNewData = async (transactions) => {
   const crypt = modules.encriptionModule.compressToBase64(str);
   dbAddDoc(crypt);
 }
+
+
+
+// ===========================
+//      UPDATE DOCUMENTS
+// ===========================
+export const dbUpdateTransaction = async (updatedTransaction) => {
+  // Get current data
+  const currentData = await dbReadDoc('data', auth.currentUser.uid);
+  if (!currentData || !currentData.data) return;
+
+  // Decrypt and parse data
+  const oldDataStr = modules.encriptionModule.decompressFromBase64(currentData.data);
+  const oldData = modules.encriptionModule.stringToJSON(oldDataStr);
+
+  // Update the transaction by matching fields
+  let found = false;
+  oldData.transactions = oldData.transactions.map(t => {
+    if (
+      t.label === updatedTransaction.label &&
+      t.type === updatedTransaction.type &&
+      t.date === updatedTransaction.date
+    ) {
+      found = true;
+      return { ...t, ...updatedTransaction };
+    }
+    return t;
+  });
+
+  if (found) {
+    // Encrypt and update Firestore using updateDoc
+    const str = modules.encriptionModule.jsonToString(oldData);
+    const crypt = modules.encriptionModule.compressToBase64(str);
+    const docRef = doc(db, "data", auth.currentUser.uid);
+    await updateDoc(docRef, { data: crypt });
+  }
+};
 
 
 

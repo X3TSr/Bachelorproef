@@ -10,3 +10,14 @@ export function toTitleCase(str) {
     text => ' ' + text
   ).trim();
 }
+
+export function toKebabCase(str) {
+  return str
+    .replace(/([a-z])([A-Z])/g, '$1-$2') // handle camelCase
+    .replace(/\s+/g, '-')                // replace spaces with -
+    .replace(/_+/g, '-')                 // replace underscores with -
+    .replace(/&/g, '')                   // remove &
+    .toLowerCase()
+    .replace(/--+/g, '-')                // replace multiple - with single -
+    .replace(/^-+|-+$/g, '');            // trim leading/trailing -
+}

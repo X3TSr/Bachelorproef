@@ -22,7 +22,7 @@ const Transaction = ({
 
     const tagSize = '4rem'
     const getTag = () => {
-        const tag = transaction.tag ?? 'unknown'
+        const tag = (transaction.tag ?? 'unknown').toLowerCase()
         return (
             <div style={{
                 width: `${tagSize}`,
