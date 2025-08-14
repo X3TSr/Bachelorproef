@@ -24,6 +24,91 @@ export const db = getFirestore(app);
 
 
 
+// Multilingual keyword mapping for automatic tagging
+const TAG_KEYWORDS = {
+  'Food': {
+    en: ['restaurant', 'cafe', 'supermarket', 'grocery', 'bakery', 'food', 'meal', 'dinner', 'lunch', 'breakfast', 'drink'],
+    fr: ['restaurant', 'café', 'supermarché', 'épicerie', 'boulangerie', 'nourriture', 'repas', 'dîner', 'déjeuner', 'petit déjeuner', 'boisson'],
+    nl: ['restaurant', 'café', 'supermarkt', 'winkel', 'bakkerij', 'eten', 'maaltijd', 'diner', 'lunch', 'ontbijt', 'drank']
+  },
+  'Marketing': {
+    en: ['facebook ads', 'google ads', 'seo', 'campaign', 'promotion', 'advertisement', 'marketing', 'advertising'],
+    fr: ['publicité facebook', 'publicité google', 'seo', 'campagne', 'promotion', 'annonce', 'marketing', 'publicité'],
+    nl: ['facebook advertenties', 'google advertenties', 'seo', 'campagne', 'promotie', 'advertentie', 'marketing', 'reclame']
+  },
+  'Social Contribution': {
+    en: ['donation', 'charity', 'ngo', 'non-profit', 'social cause', 'support', 'social contribution'],
+    fr: ['don', 'charité', 'ONG', 'organisation à but non lucratif', 'cause sociale', 'soutien', 'contribution sociale'],
+    nl: ['donatie', 'liefdadigheid', 'ngo', 'non-profit', 'sociaal doel', 'steun', 'maatschappelijke bijdrage']
+  },
+  'Taxes': {
+    en: ['tax', 'vat', 'income tax', 'tax return', 'taxes', 'tax payment'],
+    fr: ['taxe', 'TVA', 'impôt sur le revenu', 'déclaration fiscale', 'impôts', 'paiement des impôts'],
+    nl: ['belasting', 'btw', 'inkomstenbelasting', 'belastingaangifte', 'belastingen', 'belastingbetaling']
+  },
+  'Travel': {
+    en: ['hotel', 'airbnb', 'flight', 'booking.com', 'train', 'bus', 'travel', 'trip', 'vacation', 'holiday', 'transportation'],
+    fr: ['hôtel', 'airbnb', 'vol', 'booking.com', 'train', 'bus', 'voyage', 'trajet', 'vacances', 'transport'],
+    nl: ['hotel', 'airbnb', 'vlucht', 'booking.com', 'trein', 'bus', 'reis', 'trip', 'vakantie', 'vervoer']
+  },
+  'Water & Electricity': {
+    en: ['electricity', 'water', 'utility', 'heating', 'cooling', 'utilities'],
+    fr: ['électricité', 'eau', 'service public', 'chauffage', 'climatisation', 'services publics'],
+    nl: ['elektriciteit', 'water', 'nutsvoorziening', 'verwarming', 'koeling', 'nutsbedrijven']
+  },
+  'Transport': {
+    en: ['bus', 'tram', 'fuel', 'diesel', 'parking', 'taxi', 'uber', 'lyft', 'transport', 'vehicle', 'car', 'motorcycle'],
+    fr: ['bus', 'tram', 'carburant', 'diesel', 'parking', 'taxi', 'transport', 'véhicule', 'voiture', 'moto'],
+    nl: ['bus', 'tram', 'brandstof', 'diesel', 'parking', 'taxi', 'vervoer', 'voertuig', 'auto', 'motorfiets']
+  },
+  'Shopping': {
+    en: ['amazon', 'bol.com', 'ikea', 'shop', 'mall', 'clothing', 'electronics', 'furniture', 'shopping'],
+    fr: ['amazon', 'bol.com', 'ikea', 'magasin', 'centre commercial', 'vêtements', 'électronique', 'meubles', 'shopping'],
+    nl: ['amazon', 'bol.com', 'ikea', 'winkel', 'winkelcentrum', 'kleding', 'elektronica', 'meubels', 'winkelen']
+  },
+  'Bills': {
+    en: ['phone bill', 'internet', 'subscription', 'streaming', 'bill', 'invoice', 'payment', 'service'],
+    fr: ['facture téléphone', 'internet', 'abonnement', 'streaming', 'facture', 'invoice', 'paiement', 'service'],
+    nl: ['telefoonrekening', 'internet', 'abonnement', 'streaming', 'rekening', 'factuur', 'betaling', 'dienst']
+  },
+  'Health': {
+    en: ['pharmacy', 'doctor', 'dentist', 'hospital', 'health', 'medical', 'wellness', 'fitness', 'gym', 'healthcare'],
+    fr: ['pharmacie', 'médecin', 'dentiste', 'hôpital', 'santé', 'médical', 'bien-être', 'fitness', 'salle de sport', 'soins de santé'],
+    nl: ['apotheek', 'arts', 'tandarts', 'ziekenhuis', 'gezondheid', 'medisch', 'wellness', 'fitness', 'sportschool', 'gezondheidszorg']
+  },
+  'Entertainment': {
+    en: ['cinema', 'netflix', 'concert', 'event', 'theater', 'music', 'entertainment', 'game', 'hobby', 'leisure', 'D&D'],
+    fr: ['cinéma', 'netflix', 'concert', 'événement', 'théâtre', 'musique', 'divertissement', 'jeu', 'loisir', 'hobby', 'D&D'],
+    nl: ['bioscoop', 'netflix', 'concert', 'evenement', 'theater', 'muziek', 'entertainment', 'spel', 'hobby', 'vrije tijd', 'D&D']
+  }
+};
+
+// Helper to normalize strings: lowercase + remove accents
+function normalize(text) {
+  return text
+    .toLowerCase()
+    .normalize('NFD') // separate accents
+    .replace(/[\u0300-\u036f]/g, '') // remove accents
+    .trim();
+}
+
+function getTagForTransaction(label) {
+  const normalizedLabel = normalize(label);
+  for (const [tag, langs] of Object.entries(TAG_KEYWORDS)) {
+    for (const keywords of Object.values(langs)) {
+      for (const kw of keywords) {
+        const normalizedKw = normalize(kw);
+        if (normalizedLabel.includes(normalizedKw)) {
+          return tag;
+        }
+      }
+    }
+  }
+  return '';
+}
+
+
+
 // ==========================
 //     READING DOCUMENTS
 // ==========================
@@ -91,7 +176,7 @@ const createDataObject = async (transactions) => {
       "type": `${transaction['type']}`,
       "value": `${transaction['value']}`,
       "date": `${transaction['date']}`,
-      "tag": ``
+      "tag": getTagForTransaction(transaction['label'])
     })
   })
   
@@ -199,11 +284,11 @@ export const dbUpdateTransaction = async (updatedTransaction) => {
   // Get current data
   const currentData = await dbReadDoc('data', auth.currentUser.uid);
   if (!currentData || !currentData.data) return;
-
+  
   // Decrypt and parse data
   const oldDataStr = modules.encriptionModule.decompressFromBase64(currentData.data);
   const oldData = modules.encriptionModule.stringToJSON(oldDataStr);
-
+  
   // Update the transaction by matching fields
   let found = false;
   oldData.transactions = oldData.transactions.map(t => {
@@ -217,7 +302,7 @@ export const dbUpdateTransaction = async (updatedTransaction) => {
     }
     return t;
   });
-
+  
   if (found) {
     // Encrypt and update Firestore using updateDoc
     const str = modules.encriptionModule.jsonToString(oldData);

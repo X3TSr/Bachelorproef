@@ -30,7 +30,7 @@ const Transaction = ({
                 backgroundColor: 'var(--color-white)',
                 borderRadius: '50vw'
             }} className={`flex justifyMiddle alignCenter`}>
-                <img style={{ width: `calc(${tagSize}/2)` }} src={`/tags/${tag}.svg`} alt={`${tag}-tag`} onError={handleImageError} />
+                <img style={{ width: `calc(${tagSize}/2)` }} src={`/tags/${modules.textCasingModule.toKebabCase(tag)}.svg`} alt={`${modules.textCasingModule.toKebabCase(tag)}-tag`} onError={handleImageError} />
             </div>
         )
     }

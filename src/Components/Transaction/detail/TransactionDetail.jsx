@@ -54,7 +54,7 @@ const TransactionDetail = ({
                 backgroundColor: 'var(--color-white)',
                 borderRadius: '50vw'
             }} className={`flex justifyMiddle alignCenter`}>
-                <img style={{ width: `calc(${tagSize}/2)` }} src={`/tags/${tag}.svg`} alt={`${tag}-tag`} onError={handleImageError} />
+                <img style={{ width: `calc(${tagSize}/2)` }} src={`/tags/${modules.textCasingModule.toKebabCase(tag)}.svg`} alt={`${modules.textCasingModule.toKebabCase(tag)}-tag`} onError={handleImageError} />
             </div>
         )
     }
@@ -76,7 +76,6 @@ const TransactionDetail = ({
     };
 
     const handleTagChange = (e) => {
-        console.log(modules.textCasingModule.toKebabCase(e.target.value));
         setSelectedTag(e.target.value);
     };
 
