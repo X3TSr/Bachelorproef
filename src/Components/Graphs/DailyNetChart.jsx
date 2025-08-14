@@ -72,7 +72,7 @@ const DailyNetChart = ({ monthYearValue }) => {
                     style={{
                         display: 'flex',
                         justifyContent: 'center',
-                        background: 'var(--color-secondary)',
+                        background: 'var(--color-primary-100)',
                         color: '#fff',
                         border: `2px solid ${color}`,
                         borderRadius: '4px',
