@@ -54,7 +54,7 @@ const TransactionDetail = ({
                 backgroundColor: 'var(--color-white)',
                 borderRadius: '50vw'
             }} className={`flex justifyMiddle alignCenter`}>
-                <img style={{ width: `calc(${tagSize}/2)` }} src={`/tags/${modules.textCasingModule.toKebabCase(tag)}.svg`} alt={`${modules.textCasingModule.toKebabCase(tag)}-tag`} onError={handleImageError} />
+                {transaction.tag && <img style={{ width: `calc(${tagSize}/2)` }} src={`/tags/${modules.textCasingModule.toKebabCase(tag)}.svg`} alt={`${modules.textCasingModule.toKebabCase(tag)}-tag`} onError={handleImageError} />}
             </div>
         )
     }
@@ -139,4 +139,4 @@ const TransactionDetail = ({
     );
 };
 
-export default TransactionDetail;
+export default React.memo(TransactionDetail);

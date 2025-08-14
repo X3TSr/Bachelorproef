@@ -169,57 +169,54 @@ const createDataObject = async (transactions) => {
     json.history = [];
   }
   
-  // Add all transactions
-  transactions.map(transaction => {
-    json.transactions.push({
-      "label": `${transaction['label']}`,
-      "type": `${transaction['type']}`,
-      "value": `${transaction['value']}`,
-      "date": `${transaction['date']}`,
-      "tag": getTagForTransaction(transaction['label'])
-    })
-  })
+  // Add all transactions (convert and add metadata)
+  for (const transaction of transactions) {
+    const obj = {
+      label: `${transaction['label']}`,
+      type: `${transaction['type']}`,
+      value: `${transaction['value']}`,
+      date: `${transaction['date']}`,
+      tag: getTagForTransaction(transaction['label'])
+    };
+    json.transactions.push(obj);
+  }
   
-  // Sort the transactions by date
+  // Sort the transactions by date using a yyyyMMdd key for faster comparisons
   json.transactions.sort((a, b) => {
-    const [dayA, monthA, yearA] = [
-      parseInt(a.date.slice(0, 2), 10),
-      parseInt(a.date.slice(2, 4), 10) - 1,
-      parseInt(a.date.slice(4), 10),
-    ];
-    const [dayB, monthB, yearB] = [
-      parseInt(b.date.slice(0, 2), 10),
-      parseInt(b.date.slice(2, 4), 10) - 1,
-      parseInt(b.date.slice(4), 10),
-    ];
-    
-    const dateA = new Date(yearA, monthA, dayA);
-    const dateB = new Date(yearB, monthB, dayB);
-    
-    return dateA - dateB;
-  })
-  
-  // Calculate total income & expenses
-  transactions.map(transaction => {
-    if (transaction.type == 'income') json.totalIncome = (parseFloat(json.totalIncome) + parseFloat(transaction.value)).toFixed(2);
-    if (transaction.type == 'expense') json.totalExpenses = (parseFloat(json.totalExpenses) + parseFloat(transaction.value)).toFixed(2);
-  })
-  
-  // Create each year obj in history
-  let prevYear = json.transactions[0]?.date.slice(-4);
-  let gain = 0;
-  let loss = 0;
-  json.transactions.map(transaction => {
-    if (transaction.date.slice(-4) > prevYear) {
-      json.history.push({ 'year': prevYear, 'gain': gain.toFixed(2), 'loss': loss.toFixed(2) })
-      gain = 0;
-      loss = 0;
-      prevYear = transaction.date.slice(-4);
-    }
-    if (transaction.type == 'income') gain += parseFloat(transaction.value);
-    if (transaction.type == 'expense') loss -= parseFloat(transaction.value);
+    const keyA = a.date.slice(4) + a.date.slice(2, 4) + a.date.slice(0, 2);
+    const keyB = b.date.slice(4) + b.date.slice(2, 4) + b.date.slice(0, 2);
+    return keyA.localeCompare(keyB);
   });
-  json.history.push({ 'year': prevYear, 'gain': gain, 'loss': loss })
+  
+  // Update totals by iterating only the newly added transactions (last N entries) to avoid reprocessing existing
+  const newCount = transactions.length;
+  if (newCount > 0) {
+    const startIndex = json.transactions.length - newCount;
+    for (let i = startIndex; i < json.transactions.length; i++) {
+      const t = json.transactions[i];
+      if (t.type == 'income') json.totalIncome = (parseFloat(json.totalIncome) + parseFloat(t.value)).toFixed(2);
+      if (t.type == 'expense') json.totalExpenses = (parseFloat(json.totalExpenses) + parseFloat(t.value)).toFixed(2);
+    }
+  }
+
+  // Create history: iterate all transactions once to build yearly gain/loss
+  if (json.transactions.length) {
+    let prevYear = json.transactions[0].date.slice(-4);
+    let gain = 0;
+    let loss = 0;
+    for (const transaction of json.transactions) {
+      const year = transaction.date.slice(-4);
+      if (year > prevYear) {
+        json.history.push({ year: prevYear, gain: gain.toFixed(2), loss: loss.toFixed(2) });
+        gain = 0;
+        loss = 0;
+        prevYear = year;
+      }
+      if (transaction.type == 'income') gain += parseFloat(transaction.value);
+      if (transaction.type == 'expense') loss -= parseFloat(transaction.value);
+    }
+    json.history.push({ year: prevYear, gain: gain, loss: loss });
+  }
   
   // Calculate total net
   json.total = parseFloat((json.totalIncome) - (json.totalExpenses)).toFixed(2);

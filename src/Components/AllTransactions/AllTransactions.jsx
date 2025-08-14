@@ -2,12 +2,16 @@ import React, { useMemo, useState } from 'react';
 import style from './AllTransactions.module.css';
 
 import useDataFunctions from '../../hooks/useDataFunctions';
+import useDebounce from '../../hooks/useDebounce';
 
 import Card from '../Card/Card';
 import Transaction from '../Transaction/Transaction';
 import Input from '../Input/Input';
 import Select from '../Select/Select';
 import TransactionDetail from '../Transaction/detail/TransactionDetail';
+import { FixedSizeList as List } from 'react-window';
+
+const ROW_HEIGHT = 72;
 
 const AllTransactions = () => {
     const {
@@ -32,9 +36,11 @@ const AllTransactions = () => {
         return d;
     }
 
+    const debouncedSearch = useDebounce(searchValue, 250);
+
     const filteredTransactions = useMemo(() => {
         let filtered = allTransactions?.filter((t) =>
-            t.label?.toLowerCase().includes(searchValue.toLowerCase())
+            t.label?.toLowerCase().includes(debouncedSearch.toLowerCase())
         ) || [];
 
         // Sorting logic
@@ -56,7 +62,16 @@ const AllTransactions = () => {
         });
 
         return filtered;
-    }, [allTransactions, searchValue, sortBy, sortDirection]);
+    }, [allTransactions, debouncedSearch, sortBy, sortDirection]);
+
+    const Row = React.memo(({ index, style: rowStyle }) => {
+        const transaction = filteredTransactions[index];
+        return (
+            <div style={rowStyle}>
+                <Transaction key={`${transaction.date}-${transaction.label}-${index}`} transaction={transaction} hasDate onclick={() => { setHideAll(true); setShowDetail(transaction) }} />
+            </div>
+        );
+    });
 
     return (
         <section className={`${style.sectionAllTransactions}`}>
@@ -76,9 +91,9 @@ const AllTransactions = () => {
                 {!hideAll &&
                     <div className={`${style.scrollBox}`}>
                         {filteredTransactions.length > 0 ? (
-                            filteredTransactions.map((transaction, index) => (
-                                <Transaction key={index} transaction={transaction} hasDate onclick={() => { setHideAll(true); setShowDetail(transaction) }} />
-                            ))
+                            <List height={Math.min(600, filteredTransactions.length * ROW_HEIGHT)} itemCount={filteredTransactions.length} itemSize={ROW_HEIGHT} width={'100%'}>
+                                {Row}
+                            </List>
                         ) : (
                             <h2 className='flex jdc justifyMiddle alignCenter h100'>
                                 No transactions match your search

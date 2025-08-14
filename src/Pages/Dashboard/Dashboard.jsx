@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, lazy, Suspense } from 'react'
 import { Link } from 'react-router-dom';
 import style from './Dashboard.module.css'
 
@@ -11,9 +11,9 @@ import Button from '../../Components/Button/Button';
 import Card from '../../Components/Card/Card';
 import Loading from '../../Components/Loading/Loading';
 import useDataFunctions from '../../hooks/useDataFunctions';
-import Intro from '../Intro/Intro';
-import YearHistoryChart from '../../Components/Graphs/YearHistoryChart';
 import { useIsMobile } from '../../hooks/useIsMobile';
+import Intro from '../Intro/Intro';
+const YearHistoryChart = lazy(() => import('../../Components/Graphs/YearHistoryChart'));
 
 const Dashboard = () => {
 
@@ -60,7 +60,9 @@ const Dashboard = () => {
                         <Card type='budgetTextG' content='Income' number={getYearTotalIncome()} />
                         <Card type='budgetTextR' content='Expenses' number={getYearTotalExpenses()} />
                         <Card type='graphBottom' classN={`${isMobile ? '' : 'span2'}`} hideTitle>
-                            <YearHistoryChart inputData={userData} inputKeys={keys} numberOfYears={isMobile ? 3 : 6} />
+                            <Suspense fallback={<Loading />}>
+                                <YearHistoryChart inputData={userData} inputKeys={keys} numberOfYears={isMobile ? 3 : 6} />
+                            </Suspense>
                         </Card>
                         <Card
                             type='percent'

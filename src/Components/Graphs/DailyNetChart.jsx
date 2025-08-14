@@ -93,4 +93,4 @@ const DailyNetChart = ({ monthYearValue }) => {
     );
 };
 
-export default DailyNetChart;
+export default React.memo(DailyNetChart);

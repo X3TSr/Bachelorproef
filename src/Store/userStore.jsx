@@ -6,6 +6,11 @@ import { doc, getDoc, serverTimestamp, setDoc } from "firebase/firestore";
 export const useUserStore = create((set) => ({
     user: null,
     isLoggedIn: false,
+    // Add decrypted data cache to this store
+    dbCryptData: null,
+    data: null,
+    setDbCryptData: (v) => set({ dbCryptData: v }),
+    setData: (v) => set({ data: v }),
     login: async (email, password) => {
         try {
             const userCredential = await signInWithEmailAndPassword(auth, email, password)

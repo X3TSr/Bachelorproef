@@ -1,11 +1,28 @@
 import * as modules from '../general-js/scripts'
 import useFetchData from './useFetchData';
+import { useMemo } from 'react';
 
 
 export default function useDataFunctions() {
 
     const date = new Date;
     const { data } = useFetchData();
+
+    // Memoize parsed transactions to avoid repeated parsing for every calculation
+    const transactions = useMemo(() => {
+        if (!data?.transactions?.length) return [];
+        return data.transactions.map(t => {
+            const day = t.date?.slice(0, 2) ?? '';
+            const month = t.date?.slice(2, 4) ?? '';
+            const year = t.date?.slice(-4) ?? '';
+            const parsedDate = { day, month, year };
+            const valueNum = parseFloat(t.value || 0);
+            return { ...t, parsedDate, valueNum, absValue: Math.abs(valueNum) };
+        });
+    }, [data]);
+
+    // Helper to get parsed date in the same shape as getTransactionDate
+    const getParsedDate = (transaction) => transaction.parsedDate || getTransactionDate(transaction);
 
     // ========================
     //          GENERAL
@@ -32,8 +49,8 @@ export default function useDataFunctions() {
         const factor = order === 'desc' ? -1 : 1;
 
         return transactions.slice().sort((a, b) => {
-            const dateA = getTransactionDate(a);
-            const dateB = getTransactionDate(b);
+            const dateA = getParsedDate(a);
+            const dateB = getParsedDate(b);
 
             if (dateA.year !== dateB.year) {
                 return (dateA.year - dateB.year) * factor;
@@ -70,18 +87,16 @@ export default function useDataFunctions() {
     //          BY DAY
     // ========================
     const getDayAllTransactions = (dayMonthYearValue = '') => {
-        if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return [];
+        if (!transactions.length) return [];
         dayMonthYearValue = dayMonthYearValue ? dayMonthYearValue : getCurrentDate().full;
+        const day = dayMonthYearValue.slice(0, 2);
+        const month = dayMonthYearValue.slice(2, 4);
+        const year = dayMonthYearValue.slice(-4);
 
-        const transactions = [];
-        data.transactions.map(transaction => {
-            if (getTransactionDate(transaction).year != getTransactionDate(dayMonthYearValue).year) return;
-            if (getTransactionDate(transaction).month != getTransactionDate(dayMonthYearValue).month) return;
-            if (getTransactionDate(transaction).day != getTransactionDate(dayMonthYearValue).day) return;
-            transactions.push(transaction);
+        return transactions.filter(t => {
+            const d = t.parsedDate;
+            return d.year === year && d.month === month && d.day === day;
         });
-
-        return transactions;
     }
 
 
@@ -89,55 +104,48 @@ export default function useDataFunctions() {
     //          BY MONTH
     // ========================
     const getMonthAllTransactions = (monthYearValue = '') => {
-        if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return [];
+        if (!transactions.length) return [];
         monthYearValue = monthYearValue ? monthYearValue : getCurrentDate().full.slice(2);
+        const month = monthYearValue.slice(0, 2);
+        const year = monthYearValue.slice(-4);
 
-        const transactions = [];
-        data.transactions.map(transaction => {
-            if (getTransactionDate(transaction).year != monthYearValue.slice(-4)) return;
-            if (getTransactionDate(transaction).month != monthYearValue.slice(0, 2)) return;
-            transactions.push(transaction);
-        });
-
-        return transactions;
+        return transactions.filter(t => t.parsedDate.year === year && t.parsedDate.month === month);
     }
 
     const getMonthTotalIncome = (monthYearValue = '') => {
-        if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return (0).toFixed(2);
+        if (!transactions.length) return (0).toFixed(2);
         monthYearValue = monthYearValue ? monthYearValue : getCurrentDate().full.slice(2);
+        const month = monthYearValue.slice(0, 2);
+        const year = monthYearValue.slice(-4);
 
-        let total = 0;
-        data.transactions.map(transaction => {
-            if (transaction.type != 'income') return;
-            if (getTransactionDate(transaction).year != monthYearValue.slice(-4)) return;
-            if (getTransactionDate(transaction).month != monthYearValue.slice(0, 2)) return;
-            total += parseFloat(transaction.value);
-        });
+        const total = transactions.reduce((acc, t) => {
+            if (t.type !== 'income') return acc;
+            if (t.parsedDate.year !== year || t.parsedDate.month !== month) return acc;
+            return acc + (t.valueNum ?? parseFloat(t.value || 0));
+        }, 0);
 
         return parseFloat(total).toFixed(2);
     }
 
     const getMonthTotalExpenses = (monthYearValue = '') => {
-        if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return (0).toFixed(2);
+        if (!transactions.length) return (0).toFixed(2);
         monthYearValue = monthYearValue ? monthYearValue : getCurrentDate().full.slice(2);
+        const month = monthYearValue.slice(0, 2);
+        const year = monthYearValue.slice(-4);
 
-        let total = 0;
-        data.transactions.map(transaction => {
-            if (transaction.type != 'expense') return;
-            if (getTransactionDate(transaction).year != monthYearValue.slice(-4)) return;
-            if (getTransactionDate(transaction).month != monthYearValue.slice(0, 2)) return;
-            total += parseFloat(transaction.value);
-        });
+        const total = transactions.reduce((acc, t) => {
+            if (t.type !== 'expense') return acc;
+            if (t.parsedDate.year !== year || t.parsedDate.month !== month) return acc;
+            return acc + (t.valueNum ?? parseFloat(t.value || 0));
+        }, 0);
 
         return parseFloat(total).toFixed(2);
     }
 
     const getMonthNet = (monthYearValue = '') => {
-        if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return [];
-        monthYearValue = monthYearValue ? monthYearValue : getCurrentDate().full.slice(2);
-
         return parseFloat(getMonthTotalIncome(monthYearValue) - getMonthTotalExpenses(monthYearValue));
     }
+
 
 
 
@@ -145,237 +153,156 @@ export default function useDataFunctions() {
     //          BY YEAR
     // ========================
     const getYearAllTransactions = (year = '') => {
-        if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return [];
+        if (!transactions.length) return [];
         year = year ? year : date.getFullYear();
-
-        let transactions = [];
-        data.transactions.map((transaction) => {
-            if (getTransactionDate(transaction).year != year) return;
-            transactions.push(transaction);
-        })
-
-        return transactions;
+        return transactions.filter(t => t.parsedDate.year == year);
     }
 
     const getYearTotalIncome = (year = '') => {
-        if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return (0).toFixed(2);
+        if (!transactions.length) return (0).toFixed(2);
         year = year ? year : date.getFullYear();
-
-        let total = 0;
-        data.transactions.map(transaction => {
-            if (transaction.type != 'income') return;
-            if (getTransactionDate(transaction).year != year) return;
-            total += parseFloat(transaction.value);
-        });
-
+        const total = transactions.reduce((acc, t) => {
+            if (t.type !== 'income') return acc;
+            if (t.parsedDate.year != year) return acc;
+            return acc + (t.valueNum ?? parseFloat(t.value || 0));
+        }, 0);
         return parseFloat(total).toFixed(2);
     }
 
     const getYearHighestIncome = (year = '') => {
-        if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return { label: '', value: 0 };
+        if (!transactions.length) return { label: '', value: 0 };
         year = year ? year : date.getFullYear();
-
-        let highestIncome = data.transactions[0];
-        data.transactions.map(transaction => {
-            if (transaction.type != 'income') return;
-            if (getTransactionDate(transaction).year != year) return;
-            highestIncome = getHighestValue(transaction, highestIncome);
-        });
-        return highestIncome;
+        const incomes = transactions.filter(t => t.type === 'income' && t.parsedDate.year == year);
+        if (!incomes.length) return { label: '', value: 0 };
+        return incomes.reduce((best, cur) => getHighestValue(cur, best), incomes[0]);
     }
 
     const getYearTotalExpenses = (year = '') => {
-        if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return (0).toFixed(2);
+        if (!transactions.length) return (0).toFixed(2);
         year = year ? year : date.getFullYear();
-
-        let total = 0;
-        data.transactions.map(transaction => {
-            if (transaction.type != 'expense') return;
-            if (getTransactionDate(transaction).year != year) return;
-            total += parseFloat(transaction.value);
-        });
-
+        const total = transactions.reduce((acc, t) => {
+            if (t.type !== 'expense') return acc;
+            if (t.parsedDate.year != year) return acc;
+            return acc + (t.valueNum ?? parseFloat(t.value || 0));
+        }, 0);
         return parseFloat(total).toFixed(2);
     }
 
     const getYearHighestExpense = (year = '') => {
-        if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return { label: '', value: 0 };
+        if (!transactions.length) return { label: '', value: 0 };
         year = year ? year : date.getFullYear();
-
-        let highestExpense = data.transactions[0];
-        data.transactions.map(transaction => {
-            if (transaction.type != 'expense') return;
-            if (getTransactionDate(transaction).year != year) return;
-            highestExpense = getHighestValue(transaction, highestExpense);
-        });
-
-        return highestExpense;
+        const expenses = transactions.filter(t => t.type === 'expense' && t.parsedDate.year == year);
+        if (!expenses.length) return { label: '', value: 0 };
+        return expenses.reduce((best, cur) => getHighestValue(cur, best), expenses[0]);
     }
 
-    const getYearNet = () => {
-        return parseFloat(getYearTotalIncome() - getYearTotalExpenses()).toFixed(2);
-    }
+    const getYearNet = () => parseFloat(getYearTotalIncome() - getYearTotalExpenses()).toFixed(2);
 
 
 
     // ========================
     //          BY TAG
     // ========================
-    const getValue = (transaction, useAbsolute) =>
-        useAbsolute ? Math.abs(parseFloat(transaction.value)) : parseFloat(transaction.value);
+    const getValue = (transaction, useAbsolute) => useAbsolute ? (transaction.absValue ?? Math.abs(parseFloat(transaction.value))) : (transaction.valueNum ?? parseFloat(transaction.value));
 
     // Percent by tag (all time)
     const getPercentByTagAllTime = (tag, useAbsolute = true) => {
-        if (!data || !data.transactions?.length) return (0).toFixed(2);
+        if (!transactions.length) return (0).toFixed(2);
 
-        let tagTotal = 0;
-        let total = 0;
+        const totals = transactions.reduce((acc, t) => {
+            const v = getValue(t, useAbsolute);
+            if (t.tag == tag) acc.tagTotal += v;
+            acc.total += v;
+            return acc;
+        }, { tagTotal: 0, total: 0 });
 
-        data.transactions.forEach((transaction) => {
-            const value = getValue(transaction, useAbsolute);
-
-            if (transaction.tag == tag) tagTotal += value;
-            total += value;
-        });
-
-        return ((tagTotal / total) * 100).toFixed(2);
+        if (totals.total === 0) return (0).toFixed(2);
+        return ((totals.tagTotal / totals.total) * 100).toFixed(2);
     };
     const getTransactionPercentByTagAllTime = (tag, transaction, useAbsolute = true) => {
-        if (!data || !data.transactions?.length) return (0).toFixed(2);
+        if (!transactions.length) return (0).toFixed(2);
 
-        let tagTotal = 0;
-        data.transactions.forEach(t => {
-            if (t.tag == tag) tagTotal += getValue(t, useAbsolute);
-        });
-
+        const tagTotal = transactions.reduce((acc, t) => t.tag == tag ? acc + getValue(t, useAbsolute) : acc, 0);
         const transValue = getValue(transaction, useAbsolute);
         if (tagTotal == 0) return (0).toFixed(2);
-
         return ((transValue / tagTotal) * 100).toFixed(2);
     };
 
 
     // Percent by tag this year
     const getPercentByTagYear = (tag, year = getCurrentDate().year, useAbsolute = true) => {
-        if (!data || !data.transactions?.length) return (0).toFixed(2);
-
-        let tagTotal = 0;
-        let total = 0;
-
-        data.transactions.forEach((transaction) => {
-            const value = getValue(transaction, useAbsolute);
-
-            if (getTransactionDate(transaction).year == year) {
-                if (transaction.tag == tag) tagTotal += value;
-                total += value;
-            }
-        });
-
-        return ((tagTotal / total) * 100).toFixed(2);
+        if (!transactions.length) return (0).toFixed(2);
+        const totals = transactions.reduce((acc, t) => {
+            if (t.parsedDate.year != year) return acc;
+            const v = getValue(t, useAbsolute);
+            if (t.tag == tag) acc.tagTotal += v;
+            acc.total += v;
+            return acc;
+        }, { tagTotal: 0, total: 0 });
+        if (totals.total === 0) return (0).toFixed(2);
+        return ((totals.tagTotal / totals.total) * 100).toFixed(2);
     };
     const getTransactionPercentByTagYear = (tag, transaction, year = getCurrentDate().year, useAbsolute = true) => {
-        if (!data || !data.transactions?.length) return (0).toFixed(2);
-
-        let tagTotal = 0;
-        data.transactions.forEach(t => {
-            if (t.tag == tag && getTransactionDate(transaction).year == year) tagTotal += getValue(t, useAbsolute);
-        });
-
+        if (!transactions.length) return (0).toFixed(2);
+        const tagTotal = transactions.reduce((acc, t) => (t.tag == tag && t.parsedDate.year == year) ? acc + getValue(t, useAbsolute) : acc, 0);
         const transValue = getValue(transaction, useAbsolute);
         if (tagTotal == 0) return (0).toFixed(2);
-
         return ((transValue / tagTotal) * 100).toFixed(2);
     };
 
 
     // Percent by tag this month
     const getPercentByTagMonth = (tag, monthYearValue = getCurrentDate().full.slice(2), useAbsolute = true) => {
-        if (!data || !data.transactions?.length) return (0).toFixed(2);
-
-        let tagTotal = 0;
-        let total = 0;
-
-        data.transactions.forEach((transaction) => {
-            const value = getValue(transaction, useAbsolute);
-
-            if (getTransactionDate(transaction).year == monthYearValue.slice(-4) && getTransactionDate(transaction).month == monthYearValue.slice(0, 2)) {
-                total += value;
-                if (transaction.tag == tag) {
-                    tagTotal += value;
-                }
-            }
-        });
-
-        return ((tagTotal / total) * 100).toFixed(2);
+        if (!transactions.length) return (0).toFixed(2);
+        const month = monthYearValue.slice(0, 2);
+        const year = monthYearValue.slice(-4);
+        const totals = transactions.reduce((acc, t) => {
+            if (t.parsedDate.year !== year || t.parsedDate.month !== month) return acc;
+            const v = getValue(t, useAbsolute);
+            if (t.tag == tag) acc.tagTotal += v;
+            acc.total += v;
+            return acc;
+        }, { tagTotal: 0, total: 0 });
+        if (totals.total === 0) return (0).toFixed(2);
+        return ((totals.tagTotal / totals.total) * 100).toFixed(2);
     };
     const getTransactionPercentByTagMonth = (tag, transaction, monthYearValue = getCurrentDate().full.slice(2), useAbsolute = true) => {
-        if (!data || !data.transactions?.length) return (0).toFixed(2);
-
-        let tagTotal = 0;
-        data.transactions.forEach(t => {
-            const transDate = getTransactionDate(t);
-            if (
-                t.tag == tag &&
-                transDate.year == monthYearValue.slice(-4) &&
-                transDate.month == monthYearValue.slice(0, 2)
-            ) {
-                tagTotal += getValue(t, useAbsolute);
-            }
-        });
-
+        if (!transactions.length) return (0).toFixed(2);
+        const month = monthYearValue.slice(0, 2);
+        const year = monthYearValue.slice(-4);
+        const tagTotal = transactions.reduce((acc, t) => (t.tag == tag && t.parsedDate.year == year && t.parsedDate.month == month) ? acc + getValue(t, useAbsolute) : acc, 0);
         const transValue = getValue(transaction, useAbsolute);
         if (tagTotal == 0) return (0).toFixed(2);
-
         return ((transValue / tagTotal) * 100).toFixed(2);
     };
 
 
     // Percent by tag this day
     const getPercentByTagDay = (tag, dayMonthYearValue = getCurrentDate().full, useAbsolute = true) => {
-        if (!data || !data.transactions?.length) return (0).toFixed(2);
-
-        let tagTotal = 0;
-        let total = 0;
-
-        data.transactions.forEach((transaction) => {
-            const value = getValue(transaction, useAbsolute);
-            const tDate = getTransactionDate(transaction);
-            const isSameDay =
-                tDate.year == dayMonthYearValue.slice(-4) &&
-                tDate.month == dayMonthYearValue.slice(2, 4) &&
-                tDate.day == dayMonthYearValue.slice(0, 2);
-
-            if (transaction.tag == tag && isSameDay) {
-                tagTotal += value;
-                total += value;
-            }
-
-        });
-
-        return ((tagTotal / total) * 100).toFixed(2);
+        if (!transactions.length) return (0).toFixed(2);
+        const day = dayMonthYearValue.slice(0, 2);
+        const month = dayMonthYearValue.slice(2, 4);
+        const year = dayMonthYearValue.slice(-4);
+        const totals = transactions.reduce((acc, t) => {
+            if (t.parsedDate.year !== year || t.parsedDate.month !== month || t.parsedDate.day !== day) return acc;
+            const v = getValue(t, useAbsolute);
+            if (t.tag == tag) acc.tagTotal += v;
+            acc.total += v;
+            return acc;
+        }, { tagTotal: 0, total: 0 });
+        if (totals.total === 0) return (0).toFixed(2);
+        return ((totals.tagTotal / totals.total) * 100).toFixed(2);
     };
     const getTransactionPercentByTagDay = (tag, transaction, dayMonthYearValue = getCurrentDate().full, useAbsolute = true) => {
-        if (!data || !data.transactions?.length) return (0).toFixed(2);
-
-        const tDate = getTransactionDate(transaction);
-        const isSameDay =
-            tDate.year == dayMonthYearValue.slice(-4) &&
-            tDate.month == dayMonthYearValue.slice(2, 4) &&
-            tDate.day == dayMonthYearValue.slice(0, 2);
-        let tagTotal = 0;
-
-        data.transactions.forEach(t => {
-            if (t.tag == tag && isSameDay) {
-                tagTotal += getValue(t, useAbsolute);
-            }
-        });
-
+        if (!transactions.length) return (0).toFixed(2);
+        const day = dayMonthYearValue.slice(0, 2);
+        const month = dayMonthYearValue.slice(2, 4);
+        const year = dayMonthYearValue.slice(-4);
+        const tagTotal = transactions.reduce((acc, t) => (t.tag == tag && t.parsedDate.year == year && t.parsedDate.month == month && t.parsedDate.day == day) ? acc + getValue(t, useAbsolute) : acc, 0);
         const transValue = getValue(transaction, useAbsolute);
         if (tagTotal == 0) return (0).toFixed(2);
-
         return ((transValue / tagTotal) * 100).toFixed(2);
     };
-
 
 
 
@@ -383,59 +310,36 @@ export default function useDataFunctions() {
     //          ALL TIME
     // ========================
     const getAllTimeTotalIncome = () => {
-        if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return (0).toFixed(2);
-        let total = 0;
-        data.transactions.map(transaction => {
-            if (transaction.type != 'income') return;
-            total += parseFloat(transaction.value);
-        });
-
+        if (!transactions.length) return (0).toFixed(2);
+        const total = transactions.reduce((acc, t) => t.type === 'income' ? acc + (t.valueNum ?? parseFloat(t.value || 0)) : acc, 0);
         return total.toFixed(2);
     }
 
     const getAllTimeHighestIncome = () => {
-        if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return { label: '', value: 0 };
-        let highestIncome = data.transactions[0];
-        data.transactions.map(transaction => {
-            if (transaction.type != 'income') return;
-            highestIncome = getHighestValue(transaction, highestIncome);
-        });
-
-        return highestIncome;
+        if (!transactions.length) return { label: '', value: 0 };
+        const incomes = transactions.filter(t => t.type === 'income');
+        if (!incomes.length) return { label: '', value: 0 };
+        return incomes.reduce((best, cur) => getHighestValue(cur, best), incomes[0]);
     }
 
     const getAllTimeTotalExpenses = () => {
-        if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return (0).toFixed(2);
-        let total = 0;
-        data.transactions.map(transaction => {
-            if (transaction.type != 'expense') return;
-            total += parseFloat(transaction.value);
-        });
-
+        if (!transactions.length) return (0).toFixed(2);
+        const total = transactions.reduce((acc, t) => t.type === 'expense' ? acc + (t.valueNum ?? parseFloat(t.value || 0)) : acc, 0);
         return total.toFixed(2);
     }
 
     const getAllTimeHighestExpense = () => {
-        if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return { label: '', value: 0 };
-        let highestExpense = data.transactions[0];
-        data.transactions.map(transaction => {
-            if (transaction.type != 'expense') return;
-            highestExpense = getHighestValue(transaction, highestExpense);
-        });
-
-        return highestExpense;
+        if (!transactions.length) return { label: '', value: 0 };
+        const expenses = transactions.filter(t => t.type === 'expense');
+        if (!expenses.length) return { label: '', value: 0 };
+        return expenses.reduce((best, cur) => getHighestValue(cur, best), expenses[0]);
     }
 
-    const getAllTimeNet = () => {
-        return parseFloat(
-            parseFloat(getAllTimeTotalIncome()) - parseFloat(getAllTimeTotalExpenses())
-        ).toFixed(2);
-    }
+    const getAllTimeNet = () => parseFloat(parseFloat(getAllTimeTotalIncome()) - parseFloat(getAllTimeTotalExpenses())).toFixed(2);
 
     const getAllTimeTransactions = () => {
-        if (!data || !Object.hasOwn(data, 'transactions') || data?.transactions.length == 0) return [{ label: '', value: 0 }];
-        const transactions = data.transactions.slice();
-        return transactions;
+        if (!transactions.length) return [];
+        return transactions.slice();
     }
 
 

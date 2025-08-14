@@ -1,10 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, lazy, Suspense } from 'react'
 import style from './Cashflow.module.css'
 
 import * as modules from '../../general-js/scripts';
 
 import Card from '../../Components/Card/Card';
-import DailyNetChart from '../../Components/Graphs/DailyNetChart';
+const DailyNetChart = lazy(() => import('../../Components/Graphs/DailyNetChart'));
 import useDataFunctions from '../../hooks/useDataFunctions';
 import Transaction from '../../Components/Transaction/Transaction';
 import Button from '../../Components/Button/Button';
@@ -12,6 +12,7 @@ import Overlay from '../../Components/Overlay/Overlay';
 import AddEntry from '../../Components/AddEntry/AddEntry';
 import AllTransactions from '../../Components/AllTransactions/AllTransactions';
 import { useIsMobile } from '../../hooks/useIsMobile';
+import Loading from '../../Components/Loading/Loading';
 
 const Cashflow = () => {
 
@@ -86,7 +87,11 @@ const Cashflow = () => {
                 <div className={`${style.cashFlowGrid} ${isMobile ? style.mobileCashflowGrid : ''}`}>
                     <div className={`${style.graphCard}`}>
                         <Card classN={`${style.graphCardMain}`} type='graphTop' content={`${thisMonthName} Net Result`} number={getMonthNet()}>
-                            {getMonthAllTransactions() != 0 ? <DailyNetChart /> : <h2 className='flex jdc justifyMiddle alignCenter h100'>No transactions this month</h2>}
+                            {getMonthAllTransactions() != 0 ? (
+                                <Suspense fallback={<Loading />}>
+                                    <DailyNetChart />
+                                </Suspense>
+                            ) : <h2 className='flex jdc justifyMiddle alignCenter h100'>No transactions this month</h2>}
                         </Card>
                     </div>
 

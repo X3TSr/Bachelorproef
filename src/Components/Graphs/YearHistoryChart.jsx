@@ -1,3 +1,4 @@
+import React from 'react'
 import { ResponsiveBar } from '@nivo/bar'
 import { useTooltip } from '@nivo/tooltip'
 
@@ -212,4 +213,4 @@ const YearHistoryChart = ({ inputData, inputKeys, numberOfYears = 0 }) => {
     );
 };
 
-export default YearHistoryChart;
+export default React.memo(YearHistoryChart);
