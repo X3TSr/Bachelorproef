@@ -11,6 +11,7 @@ const Button = forwardRef(({
     classN,
     onclick = () => { },
     fontSize = 'p',
+    color = '',
 }, ref
 ) => {
 
@@ -35,7 +36,7 @@ const Button = forwardRef(({
     return (
         <>
             <button
-                style={{ width: `${width}`, height: `${height}` }}
+                style={{ width: `${width}`, height: `${height}`, '--color': `${color}` }}
                 className={`${style.button} ${classN} ${style[`btnType${modules.textCasingModule.toSentenceCase(type)}`]}`}
                 onClick={onclick}
                 ref={ref}
