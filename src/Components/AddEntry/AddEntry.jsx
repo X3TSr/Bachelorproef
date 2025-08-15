@@ -20,6 +20,22 @@ const AddEntry = ({
     const [createEntryValue, setCreateEntryValue] = useState(0);
     const [createEntryDate, setCreateEntryDate] = useState(`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`);
     const [createEntryInstallments, setCreateEntryInstallments] = useState(1);
+    const [createEntryTag, setCreateEntryTag] = useState('');
+
+    const TAG_OPTIONS = [
+        'Auto-detect',
+        'Food',
+        'Marketing',
+        'Social Contribution',
+        'Taxes',
+        'Travel',
+        'Water & Electricity',
+        'Transport',
+        'Shopping',
+        'Bills',
+        'Health',
+        'Entertainment'
+    ];
 
     const reformatDate = (date) => {
         if (date.split('-').length > 2) return date;
@@ -66,7 +82,7 @@ const AddEntry = ({
                     value: `${installmentValue}`,
                     date: `${dateString}`,
                     type: `${createEntryType}`,
-                    tag: ``,
+                    tag: `${createEntryTag}`,
                 });
             }
         } else {
@@ -75,7 +91,7 @@ const AddEntry = ({
                 value: `${valueNum.toFixed(2)}`,
                 date: `${createEntryDate.split('-').reverse().join('')}`,
                 type: `${createEntryType}`,
-                tag: ``,
+                tag: `${createEntryTag}`,
             });
         }
 
@@ -95,6 +111,10 @@ const AddEntry = ({
             {createEntryType === 'expense' && (
                 <Input content={createEntryInstallments} onchange={setCreateEntryInstallments} type='number' htmlFor='Pay over (years)' />
             )}
+            <Select
+                options={TAG_OPTIONS.map(tag => tag)}
+                onchange={setCreateEntryTag}
+            />
             <Input type='date' content={createEntryDate} onchange={setCreateEntryDate} htmlFor='Transaction Date' />
             <Button type='primary' text='Add Entry' fontSize='h4' onclick={checkFields} />
 

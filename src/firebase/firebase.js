@@ -176,7 +176,8 @@ const createDataObject = async (transactions) => {
       type: `${transaction['type']}`,
       value: `${transaction['value']}`,
       date: `${transaction['date']}`,
-      tag: getTagForTransaction(transaction['label'])
+      // Use provided tag if given, otherwise auto-detect from the label
+      tag: transaction['tag'] && String(transaction['tag']).trim() !== '' ? String(transaction['tag']).trim() : getTagForTransaction(transaction['label'])
     };
     json.transactions.push(obj);
   }
