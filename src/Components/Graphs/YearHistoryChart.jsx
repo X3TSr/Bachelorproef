@@ -145,9 +145,18 @@ const CustomRoundedBars = ({ bars }) => {
 };
 
 const YearHistoryChart = ({ inputData, inputKeys, numberOfYears = 0 }) => {
+    // Remove the last year difference (the last item) from the slice as well
+    const currentYear = new Date().getFullYear();
+    const latestYear = inputData && inputData.length > 0 ? inputData[inputData.length - 1].year : currentYear;
+    const yearDifference = latestYear - currentYear;
+
+    const dataToShow = inputData
+        ? inputData.slice((numberOfYears * -1), inputData.length - yearDifference)
+        : [];
+
     return (
         <ResponsiveBar
-            data={inputData ? inputData.slice((numberOfYears * -1)) : []}
+            data={dataToShow}
             keys={inputKeys}
             indexBy="year"
 
