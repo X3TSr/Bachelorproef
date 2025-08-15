@@ -4,7 +4,7 @@ import style from './TransactionDetail.module.css';
 import * as modules from '../../../general-js/scripts';
 import useDataFunctions from '../../../hooks/useDataFunctions';
 import useFetchData from '../../../hooks/useFetchData';
-import { dbUpdateTransaction } from '../../../firebase/firebase';
+import { dbUpdateTransaction, dbDeleteTransaction } from '../../../firebase/firebase';
 
 import Button from '../../Button/Button';
 
@@ -88,6 +88,18 @@ const TransactionDetail = ({
         }
     };
 
+    const handleDelete = async () => {
+        const confirmed = window.confirm('Are you sure you want to delete this transaction? This action cannot be undone.');
+        if (!confirmed) return;
+        try {
+            await dbDeleteTransaction(transaction);
+            await refetch();
+            backFn();
+        } catch (e) {
+            console.error('Failed to delete transaction', e);
+        }
+    };
+
     return (
         <div className={`${style.container}`}>
             <span className={`${style.backArrow}`} onClick={() => backFn()}>←</span>
@@ -114,12 +126,8 @@ const TransactionDetail = ({
                                     <option key={tag} value={tag}>{tag}</option>
                                 ))}
                             </select>
-                            <Button onclick={handleTagSave} disabled={!selectedTag} text='Save' width='25%'>
-                                Save
-                            </Button>
-                            <Button onclick={() => setEditingTag(false)} text='Cancel' width='25%'>
-                                Cancel
-                            </Button>
+                            <Button onclick={handleTagSave} disabled={!selectedTag} text='Save' width='25%'></Button>
+                            <Button onclick={() => setEditingTag(false)} text='Cancel' width='25%'></Button>
                         </div>
                     ))
                 }
@@ -134,6 +142,10 @@ const TransactionDetail = ({
                     :
                     <></>
                 }
+            </div>
+
+            <div style={{ marginTop: '2rem', display: 'flex', gap: '1rem' }}>
+                <Button onclick={handleDelete} text='Delete Transaction' width='51%' type='secondary' color={'var(--color-red)'}></Button>
             </div>
         </div>
     );

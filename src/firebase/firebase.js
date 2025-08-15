@@ -309,6 +309,80 @@ export const dbUpdateTransaction = async (updatedTransaction) => {
   }
 };
 
+// Delete transaction from user's data
+export const dbDeleteTransaction = async (transactionToDelete) => {
+  try {
+    const currentData = await dbReadDoc('data', auth.currentUser.uid);
+    if (!currentData || !currentData.data) return;
+
+    // Decrypt and parse data
+    const oldDataStr = modules.encriptionModule.decompressFromBase64(currentData.data);
+    const oldData = modules.encriptionModule.stringToJSON(oldDataStr);
+
+    // Find index of transaction to delete (match all identifying fields)
+    const index = oldData.transactions.findIndex(t => 
+      t.label === transactionToDelete.label &&
+      t.type === transactionToDelete.type &&
+      t.value === transactionToDelete.value &&
+      t.date === transactionToDelete.date
+    );
+
+    if (index === -1) return; // nothing to delete
+
+    // Remove the transaction
+    oldData.transactions.splice(index, 1);
+
+    // Recompute totals
+    let totalIncome = 0;
+    let totalExpenses = 0;
+    for (const t of oldData.transactions) {
+      if (t.type == 'income') totalIncome += parseFloat(t.value);
+      if (t.type == 'expense') totalExpenses += parseFloat(t.value);
+    }
+    oldData.totalIncome = parseFloat(totalIncome).toFixed(2);
+    oldData.totalExpenses = parseFloat(totalExpenses).toFixed(2);
+    oldData.total = parseFloat(oldData.totalIncome - oldData.totalExpenses).toFixed(2);
+
+    // Rebuild history grouped by year
+    if (oldData.transactions.length) {
+      // Sort transactions by date key (yyyyMMdd)
+      oldData.transactions.sort((a, b) => {
+        const keyA = a.date.slice(4) + a.date.slice(2, 4) + a.date.slice(0, 2);
+        const keyB = b.date.slice(4) + b.date.slice(2, 4) + b.date.slice(0, 2);
+        return keyA.localeCompare(keyB);
+      });
+
+      oldData.history = [];
+      let prevYear = oldData.transactions[0].date.slice(-4);
+      let gain = 0;
+      let loss = 0;
+      for (const t of oldData.transactions) {
+        const year = t.date.slice(-4);
+        if (year > prevYear) {
+          oldData.history.push({ year: prevYear, gain: gain.toFixed(2), loss: loss.toFixed(2) });
+          gain = 0;
+          loss = 0;
+          prevYear = year;
+        }
+        if (t.type == 'income') gain += parseFloat(t.value);
+        if (t.type == 'expense') loss -= parseFloat(t.value);
+      }
+      oldData.history.push({ year: prevYear, gain: gain.toFixed(2), loss: loss.toFixed(2) });
+    } else {
+      oldData.history = [];
+    }
+
+    // Encrypt and update Firestore
+    const str = modules.encriptionModule.jsonToString(oldData);
+    const crypt = modules.encriptionModule.compressToBase64(str);
+    const docRef = doc(db, "data", auth.currentUser.uid);
+    await updateDoc(docRef, { data: crypt });
+
+  } catch (e) {
+    console.error('Error deleting transaction: ', e);
+  }
+};
+
 
 
 // ==========================
