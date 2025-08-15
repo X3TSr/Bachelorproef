@@ -107,6 +107,10 @@ function getTagForTransaction(label) {
   return '';
 }
 
+// Helper to generate unique IDs for transactions
+function generateUID() {
+  return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 9);
+}
 
 
 // ==========================
@@ -165,7 +169,11 @@ const createDataObject = async (transactions) => {
     json.total = oldData.total;
     json.totalIncome = oldData.totalIncome;
     json.totalExpenses = oldData.totalExpenses;
-    json.transactions = oldData.transactions;
+    // Preserve existing transactions but ensure each has a uid
+    json.transactions = (oldData.transactions || []).map(t => ({
+      ...t,
+      uid: t.uid && String(t.uid).trim() !== '' ? String(t.uid).trim() : generateUID()
+    }));
     json.history = [];
   }
   
@@ -177,7 +185,9 @@ const createDataObject = async (transactions) => {
       value: `${transaction['value']}`,
       date: `${transaction['date']}`,
       // Use provided tag if given, otherwise auto-detect from the label
-      tag: transaction['tag'] && String(transaction['tag']).trim() !== '' ? String(transaction['tag']).trim() : getTagForTransaction(transaction['label'])
+      tag: transaction['tag'] && String(transaction['tag']).trim() !== '' ? String(transaction['tag']).trim() : getTagForTransaction(transaction['label']),
+      // Preserve uid if provided, otherwise generate one
+      uid: transaction['uid'] && String(transaction['uid']).trim() !== '' ? String(transaction['uid']).trim() : generateUID(),
     };
     json.transactions.push(obj);
   }
@@ -257,6 +267,8 @@ export const dbFillNewData = async (transactions) => {
     transaction['type'] = parseFloat(transaction['Amount']) > 0 ? 'income' : 'expense';
     transaction['value'] = transaction['Amount'].replace('-', '').replace(',', '.');
     transaction['date'] = transaction['Date'].replaceAll('/', '');
+    // Assign UID for each imported transaction
+    transaction['uid'] = generateUID();
     
     // Delete old keys to not have duplicates
     delete transaction['Free-format reference'];
@@ -290,11 +302,17 @@ export const dbUpdateTransaction = async (updatedTransaction) => {
   // Update the transaction by matching fields
   let found = false;
   oldData.transactions = oldData.transactions.map(t => {
-    if (
+    // Prefer matching by uid when available
+    if (updatedTransaction.uid && t.uid === updatedTransaction.uid) {
+      found = true;
+      return { ...t, ...updatedTransaction };
+    }
+    // Fallback for legacy transactions without uid: match by identifying fields
+    if (!updatedTransaction.uid && (
       t.label === updatedTransaction.label &&
       t.type === updatedTransaction.type &&
       t.date === updatedTransaction.date
-    ) {
+    )) {
       found = true;
       return { ...t, ...updatedTransaction };
     }
@@ -320,13 +338,20 @@ export const dbDeleteTransaction = async (transactionToDelete) => {
     const oldDataStr = modules.encriptionModule.decompressFromBase64(currentData.data);
     const oldData = modules.encriptionModule.stringToJSON(oldDataStr);
 
-    // Find index of transaction to delete (match all identifying fields)
-    const index = oldData.transactions.findIndex(t => 
-      t.label === transactionToDelete.label &&
-      t.type === transactionToDelete.type &&
-      t.value === transactionToDelete.value &&
-      t.date === transactionToDelete.date
-    );
+    // Find index of transaction to delete (match by uid when possible)
+    let index = -1;
+    if (transactionToDelete.uid) {
+      index = oldData.transactions.findIndex(t => t.uid === transactionToDelete.uid);
+    }
+    // Fallback: if uid not provided or not found, try matching by fields (legacy)
+    if (index === -1) {
+      index = oldData.transactions.findIndex(t => 
+        t.label === transactionToDelete.label &&
+        t.type === transactionToDelete.type &&
+        t.value === transactionToDelete.value &&
+        t.date === transactionToDelete.date
+      );
+    }
 
     if (index === -1) return; // nothing to delete
 

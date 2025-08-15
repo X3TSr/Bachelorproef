@@ -68,7 +68,7 @@ const AllTransactions = () => {
         const transaction = filteredTransactions[index];
         return (
             <div style={rowStyle}>
-                <Transaction key={`${transaction.date}-${transaction.label}-${index}`} transaction={transaction} hasDate onclick={() => { setHideAll(true); setShowDetail(transaction) }} />
+                <Transaction key={transaction.uid ?? `${transaction.date}-${transaction.label}-${index}`} transaction={transaction} hasDate onclick={() => { setHideAll(true); setShowDetail(transaction) }} />
             </div>
         );
     });

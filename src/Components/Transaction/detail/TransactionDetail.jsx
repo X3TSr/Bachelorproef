@@ -62,6 +62,12 @@ const TransactionDetail = ({
     const onTagChange = async (newTag) => {
         if (!data) return;
 
+        // Prefer updating by uid when available
+        if (transaction.uid) {
+            await dbUpdateTransaction({ ...transaction, tag: newTag });
+            return;
+        }
+
         for (let t of data.transactions) {
             if (t.label === transaction.label &&
                 t.type === transaction.type &&
@@ -104,7 +110,7 @@ const TransactionDetail = ({
         <div className={`${style.container}`}>
             <span className={`${style.backArrow}`} onClick={() => backFn()}>←</span>
             <div className='flex justifySpaceBetween'>
-                <h2>{transaction.label}</h2>
+                <h2>{transaction.label || 'Unknown Transaction'}</h2>
                 <h2>{getTransactionDate(transaction).day}/{getTransactionDate(transaction).month}/{getTransactionDate(transaction).year}</h2>
             </div>
             <h4 style={{ opacity: '.6' }}>Amount: € {transaction.type == 'income' ? transaction.value : `-${transaction.value}`}</h4>

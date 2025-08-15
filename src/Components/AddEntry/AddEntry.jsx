@@ -47,6 +47,10 @@ const AddEntry = ({
         return `${year}-${month}-${day}`
     }
 
+    const generateUID = () => {
+        return Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 9);
+    }
+
     const checkFields = () => {
         // require a non-empty label and a non-zero value
         const valid = createEntryLabel !== '' && parseFloat(createEntryValue) !== 0;
@@ -83,6 +87,7 @@ const AddEntry = ({
                     date: `${dateString}`,
                     type: `${createEntryType}`,
                     tag: `${createEntryTag}`,
+                    uid: generateUID(),
                 });
             }
         } else {
@@ -92,6 +97,7 @@ const AddEntry = ({
                 date: `${createEntryDate.split('-').reverse().join('')}`,
                 type: `${createEntryType}`,
                 tag: `${createEntryTag}`,
+                uid: generateUID(),
             });
         }
 
