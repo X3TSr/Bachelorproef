@@ -365,15 +365,17 @@ export default function useDataFunctions() {
     }
 
     const getSocialContribution = () => {
-        const netTaxableIncomeBeforeSocial = getGrossTaxableIncome() - getProfessionalCosts()
+        const MIN_INCOME_BASE = 17008.88;
+
+        const netTaxableIncomeBeforeSocial = Math.max(getGrossTaxableIncome() - getProfessionalCosts(), MIN_INCOME_BASE);
         const socialContributionPercent = .205;
-        const socialContribution = netTaxableIncomeBeforeSocial * socialContributionPercent;
+        const socialContribution = Math.max(0, netTaxableIncomeBeforeSocial * socialContributionPercent);
         return parseFloat(socialContribution).toFixed(2);
     }
 
     const getNetTaxableIncome = () => {
         const netTaxableIncomeBeforeSocial = getGrossTaxableIncome() - getProfessionalCosts()
-        const netTaxableIncome = netTaxableIncomeBeforeSocial - getSocialContribution()
+        const netTaxableIncome = Math.max(0, netTaxableIncomeBeforeSocial - getSocialContribution())
         return parseFloat(netTaxableIncome).toFixed(2);
     }
 
@@ -383,15 +385,16 @@ export default function useDataFunctions() {
     }
 
     const getTaxToPay = () => {
-        let finalTaxableIncome = getNetTaxableIncome() - getTaxFreeSum();
+        let finalTaxableIncome = Math.max(0, getNetTaxableIncome() - getTaxFreeSum());
         let taxToPay = 0;
-        Object.entries(brackets).forEach(bracket => {
-            if (finalTaxableIncome <= 0) return
-            finalTaxableIncome >= bracket[1].limit ?
-                taxToPay += bracket[1].limit * bracket[1].rate :
-                taxToPay += finalTaxableIncome * bracket[1].rate;
-            finalTaxableIncome -= bracket[1].limit;
-        });
+
+        for (let bracket of Object.values(brackets)) {
+            if (finalTaxableIncome <= 0) break;
+            const incomeInBracket = Math.min(finalTaxableIncome, bracket.limit);
+            taxToPay += incomeInBracket * bracket.rate;
+            finalTaxableIncome -= incomeInBracket;
+        }
+
         return parseFloat(taxToPay).toFixed(2);
     }
 
