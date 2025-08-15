@@ -267,8 +267,30 @@ export const dbFillNewData = async (transactions) => {
     transaction['type'] = parseFloat(transaction['Amount']) > 0 ? 'income' : 'expense';
     transaction['value'] = transaction['Amount'].replace('-', '').replace(',', '.');
     transaction['date'] = transaction['Date'].replaceAll('/', '');
-    // Assign UID for each imported transaction
-    transaction['uid'] = generateUID();
+    // If CSV row provides a uid field, use it. Otherwise generate a deterministic uid from label,date,value,type and tag
+    const providedUid = transaction['uid'] || transaction['UID'] || transaction['Id'] || null;
+    if (providedUid && String(providedUid).trim() !== '') {
+      transaction['uid'] = String(providedUid).trim();
+    } else {
+      // Determine tag candidate from available fields or auto-detect from label
+      const inferredTag = transaction['tag'] || getTagForTransaction(transaction['Free-format reference'] || '') || '';
+      const base = `${transaction['Free-format reference'] || ''}|${transaction['Date'] || ''}|${transaction['Amount'] || ''}|${transaction['type'] || ''}|${inferredTag}`;
+      try {
+        // Normalize to remove accents and lowercase
+        const normalized = normalize(base).replace(/\s+/g, ' ');
+        // Use base64 of normalized string as deterministic uid (safe for browser)
+        const b64 = typeof btoa !== 'undefined' ? btoa(unescape(encodeURIComponent(normalized))) : null;
+        if (b64) {
+          // keep only alphanumeric and shorten
+          const cleaned = b64.replace(/[^a-zA-Z0-9]/g, '').slice(0, 20);
+          transaction['uid'] = `det-${cleaned}`;
+        } else {
+          transaction['uid'] = generateUID();
+        }
+      } catch (e) {
+        transaction['uid'] = generateUID();
+      }
+    }
     
     // Delete old keys to not have duplicates
     delete transaction['Free-format reference'];
